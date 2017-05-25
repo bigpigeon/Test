@@ -1,0 +1,14 @@
+[postgres]
+    host="127.0.0.1"
+	dbname="test"
+	user="postgres"
+	password=""
+	sslmode="disable"
+
+[sqlite]
+    sqlurl = "./data/test.db"
+
+[mysql]
+	dbname="test"
+	user="root"
+	password=""
