@@ -1,13 +1,13 @@
 package gormdemo
 
-import (
-	"testing"
+//import (
+//	"testing"
 
-	"reflect"
+//	"reflect"
 
-	"github.com/jinzhu/gorm"
-)
+//	"github.com/jinzhu/gorm"
+//)
 
-func TestConstruct(t *testing.T) {
+//func TestConstruct(t *testing.T) {
 
-}
+//}
