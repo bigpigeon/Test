@@ -61,7 +61,7 @@ func init() {
 		if err == nil {
 			AvalibeDBs = append(AvalibeDBs, db)
 		} else {
-			fmt.Printf("%s db cannot connection: %s", s, err)
+			fmt.Printf("%s db cannot connection: %s\n", s, err)
 		}
 	}
 }

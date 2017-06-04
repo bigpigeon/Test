@@ -1,9 +1,9 @@
 package gormdemo
 
 import (
+	//	"encoding/json"
 	"testing"
 
-	//	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,67 +18,11 @@ func TestBasic(t *testing.T) {
 	})
 	t.Run("add data", func(t *testing.T) {
 		TraversalTest(t, func(db *gorm.DB) {
-			{
-				categories := []Category{
-					Category{"mobile phone", "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter/receiver"},
-					Category{"apple", ""},
-				}
-				emails := []Email{Email{Email: "example@domain.com", Subscribed: false}}
-				origin := Origin{Address1: "apple company address", Address2: "test"}
-				languages := []Language{Language{Name: "中国", Code: "cn"}, Language{Name: "美国", Code: "us"}}
-				score := 0.0
-				product := Product{
-					Name:       "iphone7",
-					Sid:        1211,
-					Categories: categories,
-					Emails:     emails,
-					Origin:     &origin,
-					Languages:  languages,
-					Score:      &score,
-				}
-				ErrorProcess(t, db.Create(&product).Error)
+			for _, product := range SampleData() {
 
-			}
-			{
-				categories := []Category{
-					Category{"mobile phone", "a hand-held mobile radiotelephone for use in an area divided into small sections, each with its own short-range transmitter/receiver"},
-					Category{"xiaomi", ""},
-				}
-				emails := []Email{Email{Email: "example2@domain.com", Subscribed: false}}
-				origin := Origin{Address1: "xiaomi company address", Address2: ""}
-				languages := []Language{Language{Name: "中国", Code: "cn"}}
-				score := 2.0
-				product := Product{
-					Name:       "xiaomi6",
-					Sid:        1311,
-					Categories: categories,
-					Emails:     emails,
-					Origin:     &origin,
-					Languages:  languages,
-					Score:      &score,
-				}
 				assert.Nil(t, db.Create(&product).Error)
 			}
-			{
-				categories := []Category{
-					Category{"food", " sth solid for eating"},
-					Category{"meat", ""},
-				}
-				emails := []Email{Email{Email: "example3@domain.com", Subscribed: false}}
-				origin := Origin{Address1: "163 company address", Address2: "163 company address2"}
-				languages := []Language{Language{Name: "中国", Code: "cn"}}
-				score := 3.0
-				product := Product{
-					Name:       "wild boar meat",
-					Sid:        9999,
-					Categories: categories,
-					Emails:     emails,
-					Origin:     &origin,
-					Languages:  languages,
-					Score:      &score,
-				}
-				assert.Nil(t, db.Create(&product).Error)
-			}
+
 		})
 	})
 	t.Run("query data", func(t *testing.T) {
