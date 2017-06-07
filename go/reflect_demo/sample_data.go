@@ -22,6 +22,7 @@ type MacApplication struct {
 	AppleStore  string `json:"apple_store"`
 	Favorite    int    `json:"favorite"`
 	Money       Money  `json:"money"`
+	int
 }
 
 func (app Application) GetData() []byte {
