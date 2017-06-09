@@ -51,7 +51,7 @@ func TraversalTest(t *testing.T, testfunc func(*gorm.DB)) {
 	}
 }
 
-func init() {
+func DBinit() {
 	f, err := ioutil.ReadFile("config.toml")
 	IfErrPanic(err)
 	err = toml.Unmarshal(f, &Config)
@@ -62,6 +62,16 @@ func init() {
 			AvalibeDBs = append(AvalibeDBs, db)
 		} else {
 			fmt.Printf("%s db cannot connection: %s\n", s, err)
+		}
+	}
+}
+
+func DBExit() {
+	for _, db := range AvalibeDBs {
+
+		err := db.Close()
+		if err != nil {
+			fmt.Printf("%s db cannot close: %s\n", db.Dialect(), err)
 		}
 	}
 }

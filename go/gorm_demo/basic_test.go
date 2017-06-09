@@ -19,7 +19,6 @@ func TestBasic(t *testing.T) {
 	t.Run("add data", func(t *testing.T) {
 		TraversalTest(t, func(db *gorm.DB) {
 			for _, product := range SampleData() {
-
 				assert.Nil(t, db.Create(&product).Error)
 			}
 
@@ -28,7 +27,6 @@ func TestBasic(t *testing.T) {
 	t.Run("query data", func(t *testing.T) {
 		TraversalTest(t, func(db *gorm.DB) {
 			{
-
 				var product Product
 				assert.Nil(t, db.First(&product).Error)
 				str, err := Encode(&product)
@@ -113,15 +111,6 @@ func TestBasic(t *testing.T) {
 				var nullEmail Email
 				db.Find(&Email{ID: id}).First(&nullEmail)
 				assert.Equal(t, &nullEmail, &Email{})
-			}
-		})
-	})
-	t.Run("close db", func(t *testing.T) {
-		TraversalTest(t, func(db *gorm.DB) {
-			if err := db.Close(); err != nil {
-				t.Error(err)
-			} else {
-				t.Log("database was closed")
 			}
 		})
 	})
