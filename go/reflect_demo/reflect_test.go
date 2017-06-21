@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"unsafe"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -199,17 +200,17 @@ func TestRelect(t *testing.T) {
 
 		{
 			realFieldName := "Application"
-			structVal := reflect.ValueOf(&app)
-			ApplicationVal := reflect.ValueOf(&app.Application)
-			offset := ApplicationVal.Elem().UnsafeAddr() - structVal.Elem().UnsafeAddr()
+			//			structVal := reflect.ValueOf(&app)
+			//			ApplicationVal := reflect.ValueOf(&app.Application)
+			offset := unsafe.Offsetof(app.Application)
 			assert.Equal(t, realFieldName, offsetmap[offset].Name)
 			t.Logf("I guess this field is %s, real field is %s", offsetmap[offset].Name, realFieldName)
 		}
 		{
 			realFieldName := "AppleStore"
-			structVal := reflect.ValueOf(&app)
-			AppleStoreVal := reflect.ValueOf(&app.AppleStore)
-			offset := AppleStoreVal.Elem().UnsafeAddr() - structVal.Elem().UnsafeAddr()
+			//			structVal := reflect.ValueOf(&app)
+			//			AppleStoreVal := reflect.ValueOf(&app.AppleStore)
+			offset := unsafe.Offsetof(app.AppleStore)
 			assert.Equal(t, realFieldName, offsetmap[offset].Name)
 			t.Logf("I guess this field is %s, real field is %s", offsetmap[offset].Name, realFieldName)
 		}

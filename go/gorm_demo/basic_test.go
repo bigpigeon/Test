@@ -9,59 +9,43 @@ import (
 )
 
 func TestBasic(t *testing.T) {
-	t.Run("create table", func(t *testing.T) {
-		TraversalTest(t, func(db *gorm.DB) {
-			tables := []interface{}{&Category{}, &Email{}, &Origin{}, &Language{}, &Product{}}
-			db.DropTableIfExists(tables...)
-			db.CreateTable(tables...)
-		})
-	})
-	t.Run("add data", func(t *testing.T) {
-		TraversalTest(t, func(db *gorm.DB) {
-			for _, product := range SampleData() {
-				assert.Nil(t, db.Create(&product).Error)
-			}
-
-		})
-	})
 	t.Run("query data", func(t *testing.T) {
 		TraversalTest(t, func(db *gorm.DB) {
 			{
 				var product Product
 				assert.Nil(t, db.First(&product).Error)
-				str, err := Encode(&product)
-				assert.Nil(t, err)
-				t.Log(str)
+				t.Logf("%+v", product)
 			}
-
 			{
 				var product Product
 				assert.Nil(t, db.Last(&product).Error)
-				str, err := Encode(&product)
-				assert.Nil(t, err)
-				t.Log(str)
+				t.Logf("%+v", product)
+			}
+			{
+				var chars []GreekAlphabet
+				assert.Nil(t, db.Find(&chars).Error)
+				t.Logf("%10s\t%s\t%s", "name", "upper", "lower")
+				for _, c := range chars {
+					t.Logf("%10s\t%c\t%c", c.LatinName, c.UpperCode, c.LowerCode)
+				}
 			}
 			{
 				var products []Product
 				assert.Nil(t, db.Find(&products).Error)
-				str, err := Encode(&products)
-				assert.Nil(t, err)
-				t.Log(str)
+				for _, p := range products {
+					t.Logf("%+v", p)
+				}
 			}
 			{
 				var product Product
 				assert.Nil(t, db.Where(&Product{Name: "xiaomi6"}).First(&product).Error)
-				str, err := Encode(&product)
-				assert.Nil(t, err)
-				t.Log(str)
+				t.Logf("%+v", product)
 			}
 			// 使用Proload查询Product中的Origin字段
 			{
 				var product Product
 				assert.Nil(t, db.Preload("Origin").Where(&Product{Name: "xiaomi6"}).First(&product).Error)
-				str, err := Encode(&product)
-				assert.Nil(t, err)
-				t.Log(str)
+				t.Logf("%+v", product)
 			}
 		})
 	})
@@ -79,7 +63,7 @@ func TestBasic(t *testing.T) {
 			}
 			// update 可以一次更新多条数据
 			{
-				assert.Nil(t, db.Model(&Product{}).Update("Description", "also nothing here").Error)
+				assert.Nil(t, db.Model(&Product{}).Updates(&Product{Description: "also nothing here"}).Error)
 				products := []Product{}
 				db.Find(&products)
 				for _, p := range products {

@@ -1,6 +1,8 @@
 package gormdemo
 
 import (
+	"reflect"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -42,7 +44,43 @@ type Product struct {
 	Description string   `gorm:"size:255;default:'nothing in here'"`
 }
 
-func SampleData() []Product {
+type GreekAlphabet struct {
+	ID         uint   `gorm:"primary_key"`
+	LatinName  string `gorm:"unique_index"`
+	UpperCode  rune
+	LowerCode  rune
+	IsFrequent bool `gorm:"index"`
+}
+
+var FieldSelector struct {
+	Product       Product
+	GreekAlphabet GreekAlphabet
+}
+
+var OffsetSelector struct {
+	OffsetMap map[reflect.Type]map[uintptr]string
+}
+
+func init() {
+	OffsetSelector.OffsetMap = map[reflect.Type]map[uintptr]string{}
+	fieldSelectVal := reflect.ValueOf(&FieldSelector)
+	fieldSelectType := reflect.TypeOf(FieldSelector)
+	for i := 0; i < fieldSelectType.NumField(); i++ {
+
+		fieldVal := fieldSelectVal.Elem().Field(i)
+		scope := &gorm.Scope{Value: fieldVal.Interface()}
+		table := scope.GetModelStruct().ModelType
+		gormFields := scope.Fields()
+		OffsetSelector.OffsetMap[table] = map[uintptr]string{}
+		for j := 0; j < len(gormFields); j++ {
+			subfield := gormFields[j]
+			offset := subfield.StructField.Struct.Offset
+			OffsetSelector.OffsetMap[table][offset] = subfield.Name
+		}
+	}
+}
+
+func SampleProductData() []Product {
 	return []Product{
 		Product{
 			Name: "iphone7",
@@ -81,4 +119,41 @@ func SampleData() []Product {
 			Score:     func(f float64) *float64 { return &f }(3.0),
 		},
 	}
+}
+
+func SampleGreeceCharacterData() []GreekAlphabet {
+	upperCodeIter := 'Α'
+	lowerCodeIter := 'α'
+	nameList := []string{"Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta",
+		"Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron",
+		"Pi", "Rho"}
+	charactList := []GreekAlphabet{}
+	for _, name := range nameList {
+		charactList = append(
+			charactList,
+			GreekAlphabet{
+				LatinName: name,
+				UpperCode: upperCodeIter,
+				LowerCode: lowerCodeIter,
+			},
+		)
+		upperCodeIter++
+		lowerCodeIter++
+	}
+	upperCodeIter++
+	lowerCodeIter++
+	nameList = []string{"Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"}
+	for _, name := range nameList {
+		charactList = append(
+			charactList,
+			GreekAlphabet{
+				LatinName: name,
+				UpperCode: upperCodeIter,
+				LowerCode: lowerCodeIter,
+			},
+		)
+		upperCodeIter++
+		lowerCodeIter++
+	}
+	return charactList
 }
