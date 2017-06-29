@@ -57,25 +57,34 @@ var FieldSelector struct {
 	GreekAlphabet GreekAlphabet
 }
 
-var OffsetSelector struct {
-	OffsetMap map[reflect.Type]map[uintptr]string
+var OffsetSelector = struct {
+	NameMap   map[reflect.Type]map[uintptr]string
+	DBNameMap map[reflect.Type]map[uintptr]string
+}{
+	NameMap:   map[reflect.Type]map[uintptr]string{},
+	DBNameMap: map[reflect.Type]map[uintptr]string{},
 }
 
 func init() {
-	OffsetSelector.OffsetMap = map[reflect.Type]map[uintptr]string{}
-	fieldSelectVal := reflect.ValueOf(&FieldSelector)
-	fieldSelectType := reflect.TypeOf(FieldSelector)
-	for i := 0; i < fieldSelectType.NumField(); i++ {
-
-		fieldVal := fieldSelectVal.Elem().Field(i)
+	// 把FieldSelector解析为reflect.Value这样可以用for循环获取其中的字段
+	fieldSelectVal := reflect.ValueOf(&FieldSelector).Elem()
+	for i := 0; i < fieldSelectVal.NumField(); i++ {
+		fieldVal := fieldSelectVal.Field(i)
+		// 通过gorm.scope来解析字段名(Name)和表字段名(DBName)容易很多
 		scope := &gorm.Scope{Value: fieldVal.Interface()}
+		// 获取表结构体的reflect.Type
 		table := scope.GetModelStruct().ModelType
+		// 获取表结构体中所有字段（这里的字段是gorm.Field而不是relfect.Field）
 		gormFields := scope.Fields()
-		OffsetSelector.OffsetMap[table] = map[uintptr]string{}
+		OffsetSelector.NameMap[table] = map[uintptr]string{}
+		OffsetSelector.DBNameMap[table] = map[uintptr]string{}
+		// 循环拿取表结构体中每一个字段然后把对应的offset和字段名/表字段名分别映射到NameMap/DBNameMap对应的table映射中
 		for j := 0; j < len(gormFields); j++ {
 			subfield := gormFields[j]
 			offset := subfield.StructField.Struct.Offset
-			OffsetSelector.OffsetMap[table][offset] = subfield.Name
+
+			OffsetSelector.NameMap[table][offset] = subfield.Name
+			OffsetSelector.DBNameMap[table][offset] = subfield.DBName
 		}
 	}
 }
