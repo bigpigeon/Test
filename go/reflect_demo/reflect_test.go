@@ -229,4 +229,28 @@ func TestRelect(t *testing.T) {
 		_, bIsMoneyType := reflect.New(bType).Interface().(MoneyType)
 		t.Logf("b is MoneyType?%v", bIsMoneyType)
 	})
+	t.Run("struct construct", func(t *testing.T) {
+		type Product struct {
+			ID    uint
+			Name  string
+			Num   int     `json:"xxx"`
+			Price float32 `json:"xxx"`
+		}
+		ProductType := reflect.TypeOf(Product{})
+		fields := []reflect.StructField{}
+		for i := 0; i < ProductType.NumField(); i++ {
+			fields = append(fields, ProductType.Field(i))
+		}
+		for _, f := range fields {
+			t.Logf("field %#v\n", f)
+		}
+		CustomType := reflect.StructOf(fields[2:])
+		for i := 0; i < CustomType.NumField(); i++ {
+			f := CustomType.Field(i)
+			t.Logf("field %#v\n", f)
+		}
+		CustomValue := reflect.New(CustomType).Elem()
+		t.Logf("custom type value: %#v\n", CustomValue)
+	})
+
 }

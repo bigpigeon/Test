@@ -12,7 +12,7 @@ type Category struct {
 }
 
 type Email struct {
-	ID         int
+	ID         int `gorm:"primary_key"`
 	UserId     int
 	Email      string `gorm:"type:varchar(100);unique_index"`
 	Subscribed bool
@@ -39,9 +39,9 @@ type Product struct {
 	Categories  []Category `gorm:"many2many:categories_product;"`
 	Emails      []Email    `gorm:"ForeignKey:UserId"`
 	Origin      *Origin
-	Languages   []Language
-	Score       *float64 `gorm:"not null;default:1.0"`
-	Description string   `gorm:"size:255;default:'nothing in here'"`
+	Languages   []Language `gorm:"many2many:user_languages;"`
+	Score       *float64   `gorm:"not null;default:1.0"`
+	Description string     `gorm:"size:255;default:'nothing in here'"`
 }
 
 type GreekAlphabet struct {

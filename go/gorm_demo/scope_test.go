@@ -81,7 +81,7 @@ func TestScope(t *testing.T) {
 			var product Product
 			fieldOffset := unsafe.Offsetof(product.Origin)
 			originPreload := FieldPreload(fieldOffset)
-			assert.Nil(t, db.Model(&Product{}).Where(&Product{Name: "xiaomi6"}).Scopes(originPreload).First(&product).Error)
+			assert.Nil(t, db.Model(&Product{}).Where(&Product{Name: "xiaomi6"}).Scopes(originPreload).Debug().First(&product).Error)
 			// 看看查询结构是否正确
 			t.Logf("this product name '%s', the address is '%v'", product.Name, product.Origin.Address1)
 		})
