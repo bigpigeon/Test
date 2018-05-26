@@ -16,6 +16,8 @@ import (
 	"database/sql/driver"
 )
 
+import "os"
+
 type Extra map[string]interface{}
 
 func (e *Extra) Scan(value interface{}) error {
@@ -57,7 +59,7 @@ type ProductDetail struct {
 
 type Product struct {
 	// join tag value must same as container field name
-	ID        uint32     `toyorm:"primary key;auto_increment;join:Detail"`
+	ID, Val   uint32     `toyorm:"primary key;auto_increment;join:Detail"`
 	CreatedAt time.Time  `toyorm:"NULL"`
 	DeletedAt *time.Time `toyorm:"NULL"`
 	Name      string
@@ -81,11 +83,14 @@ func main() {
 
 	var tab Product
 	var detailTab ProductDetail
-	var colorTab Color
+	colorTab := Color{}
 
 	// create table & import data
 	dataInit(toy)
-
+	{
+		brick := toy.Model(&tab).Debug().
+			Join(Offsetof(detailTab.Comment))
+	}
 	// now use join to query data
 	{
 		brick := toy.Model(&tab).Debug().

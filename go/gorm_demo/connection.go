@@ -22,11 +22,13 @@ func Connection(driver string) (db *gorm.DB, err error) {
 	switch driver {
 	case "postgres":
 		pconfig := Config["postgres"].(map[string]interface{})
+		config := fmt.Sprintf(
+			"user=%s dbname=%s sslmode=%s",
+			pconfig["user"], pconfig["dbname"], pconfig["sslmode"],
+		)
+		fmt.Printf("config:%s\n", config)
 		db, err = gorm.Open("postgres",
-			fmt.Sprintf(
-				"host=%s user=%s dbname=%s password=%s sslmode=%s",
-				pconfig["host"], pconfig["user"], pconfig["dbname"], pconfig["password"], pconfig["sslmode"],
-			),
+			config,
 		)
 	case "sqlite", "sqlite3":
 		sconfig := Config["sqlite"].(map[string]interface{})
@@ -56,7 +58,7 @@ func DBinit() {
 	IfErrPanic(err)
 	err = toml.Unmarshal(f, &Config)
 	IfErrPanic(err)
-	for _, s := range []string{"sqlite", "mysql", "postgres"} {
+	for _, s := range []string{"postgres"} {
 		db, err := Connection(s)
 		if err == nil {
 			AvalibeDBs = append(AvalibeDBs, db)

@@ -41,3 +41,16 @@ func TestQuery(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestQueryRow(t *testing.T) {
+	var (
+		id    int
+		name  string
+		stuff *int
+	)
+	row := DB.QueryRow("select id,name,stuff from user where age > ?", 100000)
+	err := row.Scan(&id, &name, &stuff)
+	if err != nil {
+		t.Error(err)
+	}
+}

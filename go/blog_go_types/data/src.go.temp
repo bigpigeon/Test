@@ -1,0 +1,20 @@
+package main
+
+// 该声明为GenDecl TOK=token.IMPORT
+import "fmt"
+import _ "unsafe"
+
+// 该声明为GenDecl TOK=token.TYPE
+type Product struct {
+	Name string
+}
+
+// 该声明为GenDecl TOK=token.VAR
+var product Product
+
+// 该声明为FunDecl
+func main() { //test1
+	fmt.Println("Hello, World!") //test2
+	a := []int{1,2,3}
+	a[1],a[2] = 5,6
+}

@@ -47,6 +47,27 @@ func TestRelect(t *testing.T) {
 		t.Logf("variable a length is %d,one index value is %s", aVal.Len(), aVal.MapIndex(OneVal))
 	})
 
+	t.Run("get interface{} object attributes", func(t *testing.T) {
+		var arg interface{} = 1
+		argVal := reflect.ValueOf(arg)
+		t.Logf("variable arg Value is %v", argVal.Interface())
+		t.Logf("variable arg Type is %v", argVal.Type())
+		t.Logf("variable arg Kind is %v", argVal.Kind())
+
+		var args []interface{} = []interface{}{1, "2", 3.0}
+		argsVal := reflect.ValueOf(args)
+		t.Logf("variable args Value is %v", argsVal.Interface())
+		t.Logf("variable args Type is %v", argsVal.Type())
+		t.Logf("variable args Kind is %v", argsVal.Kind())
+		for i := 0; i < argsVal.Len(); i++ {
+			elemVal := argsVal.Index(i)
+			t.Logf("variable elem %d Value is %v", i, elemVal.Interface())
+			t.Logf("variable elem %d Type is %v", i, elemVal.Type())
+			t.Logf("variable elem %d element Type is %v", i, elemVal.Elem().Type())
+			t.Logf("variable elem %d Kind is %v", i, elemVal.Kind())
+		}
+	})
+
 	t.Run("change object value", func(t *testing.T) {
 		var a int32 = 10
 		// 要改变reflect的中的值必须是一个指针的Elem()下的reflect.Value
@@ -236,15 +257,18 @@ func TestRelect(t *testing.T) {
 			Num   int     `json:"xxx"`
 			Price float32 `json:"xxx"`
 		}
+
 		ProductType := reflect.TypeOf(Product{})
 		fields := []reflect.StructField{}
 		for i := 0; i < ProductType.NumField(); i++ {
 			fields = append(fields, ProductType.Field(i))
 		}
+
 		for _, f := range fields {
 			t.Logf("field %#v\n", f)
 		}
 		CustomType := reflect.StructOf(fields[2:])
+
 		for i := 0; i < CustomType.NumField(); i++ {
 			f := CustomType.Field(i)
 			t.Logf("field %#v\n", f)

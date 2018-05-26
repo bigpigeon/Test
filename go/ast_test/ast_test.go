@@ -7,43 +7,37 @@
 package ast_test
 
 import (
-	"go/ast"
-	"testing"
-	//"go/format"
 	"fmt"
+	"go/ast"
 	"go/build"
 	"go/parser"
 	"go/token"
+	//"sort"
+	"go/importer"
+	"go/types"
 	"strings"
+	"testing"
 )
 
-func TestCustom(t *testing.T) {
-	// src is the input for which we want to print the AST.
-	src := `
-/*
-multiple group
-*/
-package main
-func main() { //test1 //test2
-/*
-multiple group1
-multiple group2
-*/
-	println("Hello, World!") //test2
-}
-`
+var directory = "data/"
+
+func TestAstPrint(t *testing.T) {
 
 	// Create the AST by parsing src.
-	fset := token.NewFileSet() // positions are relative to fset
-	f, err := parser.ParseFile(fset, "", src, 0|parser.ParseComments)
+	fs := token.NewFileSet() // positions are relative to fset
+
+	fMap, err := parser.ParseDir(fs, directory, nil, 0|parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}
 
 	// Print the AST.
-	ast.Print(fset, f)
-	// Output:
-	//
+	for _, f := range fMap {
+		err = ast.Print(fs, f)
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func TestParser(t *testing.T) {
@@ -62,13 +56,16 @@ type myLogger struct {
 	name string
 }
 
-//test print
+// test prefix print
+// test print
 func (log *myLogger) Print() { //xxx
+// xxx2
 	// why
 	fmt.Printf("test")
 }
 
 func main() {
+	// test stmt print
 	loggerMap := map[string]*myLogger{}
 	var printer Printer = loggerMap["not exist"]
 	if printer == nil {
@@ -89,31 +86,46 @@ func main() {
 	cmap := ast.NewCommentMap(fset, f, f.Comments)
 	//ast.Print(fset, f)
 
-	for n, _ := range cmap {
-		ast.Print(fset, n)
-	}
-	for _, decl := range f.Decls {
-		if _func, ok := decl.(*ast.FuncDecl); ok {
-			if comments := cmap[_func]; len(comments) != 0 {
-				fmt.Println("func & comments ")
-				ast.Print(fset, _func)
-				ast.Print(fset, comments)
-			}
+	//for n, _ := range cmap {
+	//	ast.Print(fset, n)
+	//}
+	ast.Inspect(f, func(node ast.Node) bool {
+		if comments, ok := cmap[node]; ok {
+			ast.Print(fset, comments)
 		}
-		if _gen, ok := decl.(*ast.GenDecl); ok {
-			if comments := cmap[_gen]; len(comments) != 0 {
-				fmt.Println("gen & comments ")
-				ast.Print(fset, _gen)
-				ast.Print(fset, comments)
-			}
-		}
-	}
+		return true
+	})
 }
 
-//
-//func parserFunc(t *testing.T,decl *ast.FuncDecl){
-//
-//}
+func TestAstStruct(t *testing.T) {
+
+	fs := token.NewFileSet()
+	astFile, err := parser.ParseFile(fs, directory+"join_example.go", nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	for _, decl := range astFile.Decls {
+		if gen, ok := decl.(*ast.GenDecl); ok {
+			if gen.Tok == token.TYPE {
+				fmt.Printf("%s\n|- %s %s\n", fs.Position(decl.Pos()), fs.Position(decl.End()), NodeStr(gen))
+				for _, spec := range gen.Specs {
+					if typeSpec, ok := spec.(*ast.TypeSpec); ok {
+						fmt.Printf("%s\n|- %s %s\n", fs.Position(decl.Pos()), fs.Position(decl.End()), NodeStr(typeSpec))
+						if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+							fmt.Printf("%s\n|- %s struct  %s\n", fs.Position(decl.Pos()), fs.Position(decl.End()), NodeStr(structType))
+							for _, field := range structType.Fields.List {
+								fmt.Printf("field %#v %v %s\n", field.Type, field.Tag, field.Names)
+							}
+						}
+					}
+				}
+			}
+		} else {
+			fmt.Printf("%s\n|- %s %s\n", fs.Position(decl.Pos()), fs.Position(decl.End()), NodeStr(decl))
+		}
+	}
+
+}
 
 func NodeStr(node ast.Node) string {
 	switch x := node.(type) {
@@ -141,7 +153,7 @@ func NodeStr(node ast.Node) string {
 	case *ast.FuncLit:
 		return fmt.Sprintf("func %v", x.Type)
 	case *ast.SelectorExpr:
-		return "selector " + NodeStr(x.X) + "." + NodeStr(x.Sel)
+		return fmt.Sprintf("selector (%s).(%s)", NodeStr(x.Sel), NodeStr(x.X))
 	case *ast.IndexExpr:
 		return fmt.Sprintf("indent %v", x.Index)
 	case *ast.SliceExpr:
@@ -179,7 +191,6 @@ func NodeStr(node ast.Node) string {
 }
 
 func TestBuildPackage(t *testing.T) {
-	directory := "data/"
 	pkg, err := build.Default.ImportDir(directory, 0)
 	if err != nil {
 		panic(err)
@@ -204,5 +215,155 @@ func TestBuildPackage(t *testing.T) {
 		})
 		astFiles = append(astFiles, astFile)
 	}
+}
 
+func TestFindAllModel(t *testing.T) {
+	fs := token.NewFileSet()
+	astFile, err := parser.ParseFile(fs, directory+"join_example.go", nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	modelMap := map[*ast.CallExpr]ast.Expr{}
+	ast.Inspect(astFile, func(node ast.Node) bool {
+		if callExpr, ok := node.(*ast.CallExpr); ok {
+			if selector, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+				if selector.Sel.Name == "Model" {
+					if ident, ok := selector.X.(*ast.Ident); ok && ident.Name == "toy" {
+						t.Logf("%s\n|- %s %s\n", fs.Position(node.Pos()), fs.Position(node.End()), NodeStr(node))
+						arg := callExpr.Args[0]
+					ForExpr:
+						for true {
+							switch x := arg.(type) {
+							case *ast.StarExpr:
+								arg = x.X
+							case *ast.UnaryExpr:
+								arg = x.X
+							default:
+								break ForExpr
+							}
+						}
+						modelMap[callExpr] = arg
+						t.Logf("%s\n|- %s %s\n", fs.Position(arg.Pos()), fs.Position(arg.End()), NodeStr(arg))
+					}
+				} else if selector.Sel.Name == "Join" {
+					t.Logf("%s\n|- %s join\n", fs.Position(node.Pos()), fs.Position(node.End()))
+				}
+			}
+		}
+		return true
+	})
+}
+
+func TestIdentObj(t *testing.T) {
+	fs := token.NewFileSet() // positions are relative to fset
+	astFile, err := parser.ParseDir(fs, directory, nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range astFile {
+
+		ast.Inspect(file, func(node ast.Node) bool {
+			if x, ok := node.(*ast.Ident); ok {
+				if x.Name != "toy" {
+					return true
+				}
+				fmt.Printf("%s\n|- %s ident\n", fs.Position(node.Pos()), fs.Position(node.End()))
+				if x.Obj != nil {
+					fmt.Printf("type %v data %v decl %#v \n", x.Obj.Type, x.Obj.Data, x.Obj.Decl)
+					if valueSpec, ok := x.Obj.Decl.(*ast.ValueSpec); ok {
+						ast.Print(fs, valueSpec.Type)
+					} else if assignStmt, ok := x.Obj.Decl.(*ast.AssignStmt); ok {
+						if id, ok := assignStmt.Lhs[0].(*ast.Ident); ok {
+							if valueSpec, ok := id.Obj.Decl.(*ast.ValueSpec); ok {
+								ast.Print(fs, valueSpec.Type)
+							}
+						}
+						ast.Print(fs, assignStmt)
+					}
+				}
+			}
+			return true
+		})
+	}
+}
+
+type Context struct {
+	Stack []*ast.StructType
+}
+
+func TestTypesCheck(t *testing.T) {
+	fs := token.NewFileSet()
+	parserFile, err := parser.ParseFile(fs, "types_check/main.go", nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	config := types.Config{Importer: importer.For("source", nil), FakeImportC: true}
+	info := &types.Info{
+		Uses:       map[*ast.Ident]types.Object{},
+		Types:      make(map[ast.Expr]types.TypeAndValue),
+		Selections: map[*ast.SelectorExpr]*types.Selection{},
+		Scopes:     map[ast.Node]*types.Scope{},
+		Defs:       make(map[*ast.Ident]types.Object),
+	}
+	_, err = config.Check("types_check/", fs, []*ast.File{parserFile}, info)
+	if err != nil {
+		panic(err)
+	}
+	ast.Print(fs, parserFile)
+	//ast.Inspect(parserFile, func(node ast.Node) bool {
+	//	switch x := node.(type) {
+	//	case *ast.Ident:
+	//		if x.Name == "modelPreload" {
+	//			fmt.Printf("pos %s\n", fs.Position(x.Pos()))
+	//			if x.Obj != nil {
+	//				ast.Print(fs, x.Obj.Decl)
+	//			}
+	//		}
+	//	}
+	//	return true
+	//})
+	fmt.Printf("types\n")
+	for k, v := range info.Types {
+		fmt.Printf("%s \n |- %s %#v : %#v \n%#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v, v.Type.String())
+		if p, ok := v.Type.(*types.Pointer); ok {
+			fmt.Printf("elem %v\n", p.Elem())
+		}
+		fmt.Println("value", v.Value)
+		if sType, ok := v.Type.(*types.Struct); ok {
+			for i := 0; i < sType.NumFields(); i++ {
+				fmt.Printf("field: %v\n", sType.Field(i))
+			}
+		}
+	}
+
+	//fmt.Printf("defs\n")
+	//for k, v := range info.Defs {
+	//	fmt.Printf("%s \n |- %s %v : %#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	//	if v != nil {
+	//
+	//		if sType, ok := v.Type().(*types.Struct); ok {
+	//			for i := 0; i < sType.NumFields(); i++ {
+	//				fmt.Printf("field: %v\n", sType.Field(i))
+	//			}
+	//		}
+	//	}
+	//}
+	//
+	//fmt.Printf("scopes\n")
+	//for k, v := range info.Scopes {
+	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	//}
+	//fmt.Printf("selectors\n")
+	//for k, v := range info.Selections {
+	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	//	fmt.Printf("recrive %v\n", v.Type())
+	//	fmt.Printf("obj pos %s %s\n", fs.Position(v.Obj().Pos()), v.Obj())
+	//}
+	//fmt.Printf("users\n")
+	//for k, v := range info.Uses {
+	//	fmt.Printf("%s \n |- %s %v : %s \n %v \n %#v\n", fs.Position(k.Pos()), fs.Position(k.End()),
+	//		k, v, v, v)
+	//	fmt.Printf("point %p\n", v)
+	//	fmt.Printf("obj %v\n", v.String())
+	//}
 }
