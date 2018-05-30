@@ -43,5 +43,5 @@ func main() { //test1
 
 	// 打印ast节点
 	ast.Print(fset, f)
-
+	ast.Inspect()
 }

@@ -322,19 +322,19 @@ func TestTypesCheck(t *testing.T) {
 	//	}
 	//	return true
 	//})
-	fmt.Printf("types\n")
-	for k, v := range info.Types {
-		fmt.Printf("%s \n |- %s %#v : %#v \n%#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v, v.Type.String())
-		if p, ok := v.Type.(*types.Pointer); ok {
-			fmt.Printf("elem %v\n", p.Elem())
-		}
-		fmt.Println("value", v.Value)
-		if sType, ok := v.Type.(*types.Struct); ok {
-			for i := 0; i < sType.NumFields(); i++ {
-				fmt.Printf("field: %v\n", sType.Field(i))
-			}
-		}
-	}
+	//fmt.Printf("types\n")
+	//for k, v := range info.Types {
+	//	fmt.Printf("%s \n |- %s %#v : %#v \n%#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v, v.Type.String())
+	//	if p, ok := v.Type.(*types.Pointer); ok {
+	//		fmt.Printf("elem %v\n", p.Elem())
+	//	}
+	//	fmt.Println("value", v.Value)
+	//	if sType, ok := v.Type.(*types.Struct); ok {
+	//		for i := 0; i < sType.NumFields(); i++ {
+	//			fmt.Printf("field: %v\n", sType.Field(i))
+	//		}
+	//	}
+	//}
 
 	//fmt.Printf("defs\n")
 	//for k, v := range info.Defs {
@@ -353,12 +353,12 @@ func TestTypesCheck(t *testing.T) {
 	//for k, v := range info.Scopes {
 	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
 	//}
-	//fmt.Printf("selectors\n")
-	//for k, v := range info.Selections {
-	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
-	//	fmt.Printf("recrive %v\n", v.Type())
-	//	fmt.Printf("obj pos %s %s\n", fs.Position(v.Obj().Pos()), v.Obj())
-	//}
+	fmt.Printf("selectors\n")
+	for k, v := range info.Selections {
+		fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+		fmt.Printf("recrive %v\n", v.Type())
+		fmt.Printf("obj pos %s %s\n", fs.Position(v.Obj().Pos()), v.Obj())
+	}
 	//fmt.Printf("users\n")
 	//for k, v := range info.Uses {
 	//	fmt.Printf("%s \n |- %s %v : %s \n %v \n %#v\n", fs.Position(k.Pos()), fs.Position(k.End()),

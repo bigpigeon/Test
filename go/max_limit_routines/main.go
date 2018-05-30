@@ -24,19 +24,21 @@ func Work(task Task, token chan struct{}) {
 	<-token
 }
 
+// max routines
+var MaxRoutines = 100
+
 type Routines struct {
 	tokens chan struct{}
 }
 
 func (r Routines) Call(task Task) {
+	// if routines > MaxRoutine , will block
 	r.tokens <- struct{}{}
 	go Work(task, r.tokens)
 }
 
-// make routines 100
-
 func main() {
-	routines := Routines{tokens: make(chan struct{}, 100)}
+	routines := Routines{tokens: make(chan struct{}, MaxRoutines)}
 
 	for i := 0; true; i++ {
 		task := Task(time.Duration(rand.Intn(10)+1) * time.Second)
