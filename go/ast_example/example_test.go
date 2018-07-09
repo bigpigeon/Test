@@ -176,6 +176,7 @@ func main() {
 		if gen, ok := decl.(*ast.GenDecl); ok && gen.Tok == token.VAR {
 			copy(f.Decls[i:], f.Decls[i+1:])
 			f.Decls = f.Decls[:len(f.Decls)-1]
+
 		}
 	}
 

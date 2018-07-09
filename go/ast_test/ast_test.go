@@ -349,16 +349,16 @@ func TestTypesCheck(t *testing.T) {
 	//	}
 	//}
 	//
-	//fmt.Printf("scopes\n")
-	//for k, v := range info.Scopes {
-	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
-	//}
-	fmt.Printf("selectors\n")
-	for k, v := range info.Selections {
+	fmt.Printf("scopes\n")
+	for k, v := range info.Scopes {
 		fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
-		fmt.Printf("recrive %v\n", v.Type())
-		fmt.Printf("obj pos %s %s\n", fs.Position(v.Obj().Pos()), v.Obj())
 	}
+	//fmt.Printf("selectors\n")
+	//for k, v := range info.Selections {
+	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	//	fmt.Printf("recrive %v\n", v.Type())
+	//	fmt.Printf("obj pos %s %s\n", fs.Position(v.Obj().Pos()), v.Obj())
+	//}
 	//fmt.Printf("users\n")
 	//for k, v := range info.Uses {
 	//	fmt.Printf("%s \n |- %s %v : %s \n %v \n %#v\n", fs.Position(k.Pos()), fs.Position(k.End()),

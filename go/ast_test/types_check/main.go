@@ -33,7 +33,6 @@ func main() {
 	}
 	{
 		// test comments
-
 		model := toy.Model(Product{}).Limit(2).Debug().WhereGroup(toyorm.ExprEqual, map[uintptr]interface{}{
 			unsafe.Offsetof(Product{}.ID): 2,
 		})

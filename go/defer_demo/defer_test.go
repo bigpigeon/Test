@@ -1,6 +1,7 @@
 package defer_demo
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -15,4 +16,20 @@ func TestDefer(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		slice = append(slice, i)
 	}
+}
+
+func TestScopeDefer(t *testing.T) {
+	{
+		defer func() {
+			fmt.Println("out scope 1")
+		}()
+	}
+	{
+		defer func() {
+			fmt.Println("out scope 2")
+		}()
+	}
+	defer func() {
+		fmt.Println("out main scope")
+	}()
 }

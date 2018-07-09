@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 		DataSource  string
 		TableCreate string
 	}{
-		{"sqlite3", "test.db", `CREATE TABLE user (id integer PRIMARY KEY AUTOINCREMENT, name varchar(255), age integer, stuff integer)`},
+		//{"sqlite3", "test.db", `CREATE TABLE user (id integer PRIMARY KEY AUTOINCREMENT, name varchar(255), age integer, stuff integer)`},
 		{"mysql", "root:@tcp(localhost:3306)/toyorm?charset=utf8&parseTime=True&loc=Local", `CREATE TABLE user (id integer AUTO_INCREMENT, name varchar(255), age integer, stuff integer, PRIMARY KEY(id))`},
 	} {
 		var err error
@@ -32,7 +32,10 @@ func TestMain(m *testing.M) {
 			panic(err)
 		}
 		fmt.Printf("=============== %s ===============\n", d.Driver)
-		DB.Exec(`DROP TABLE user`)
+		_, err = DB.Exec(`DROP TABLE user`)
+		if err != nil {
+			panic(err)
+		}
 		result, err := DB.Exec(d.TableCreate)
 		fmt.Printf("%#v", result)
 		if err != nil {
