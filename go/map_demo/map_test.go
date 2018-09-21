@@ -20,3 +20,20 @@ func TestMapPoint(t *testing.T) {
 	t.Logf("m3 %p", m3.Interface())
 
 }
+
+func TestMapGet(t *testing.T) {
+	m := map[string]int{
+		"1":    1,
+		"2":    0,
+		"案件编号": 0,
+	}
+	d, ok := m["2"]
+	t.Log(d, ok)
+
+	d, ok = m["案件编号"]
+	t.Log(d, ok)
+	t.Logf("%d %x", len("案件编号"), "案件编号")
+	b := []byte{239, 187, 191}
+	t.Log(string(b))
+
+}

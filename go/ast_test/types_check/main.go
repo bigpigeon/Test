@@ -22,6 +22,18 @@ var (
 
 var GlobalProduct Product
 
+type SomeModel struct {
+	Name string
+}
+
+func (s *SomeModel) String() string {
+	return s.Name
+}
+
+func (s *SomeModel) SetName(name string) {
+	s.Name = name
+}
+
 var testFunc = func() string {
 	return fmt.Sprintf("2222")
 }
