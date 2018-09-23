@@ -15,6 +15,11 @@ type Stringer interface {
 	String() string
 }
 
+type WriteStringer interface {
+	String() string
+	Writer(writer io.Writer)
+}
+
 // named 类型包含它的method信息
 type Response struct {
 	Name  string
@@ -71,3 +76,11 @@ var intVal int
 type CustomInt int
 
 var intVal2 CustomInt
+
+var byteType []byte
+var strType string
+var interfaceType interface{}
+
+var int64Type int = 24
+
+const unintType = 42

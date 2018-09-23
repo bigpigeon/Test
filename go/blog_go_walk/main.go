@@ -109,5 +109,28 @@ func main() {
 	// use Implicate to match type and interface
 	stringer := pkg.Scope().Lookup("Stringer").Type().Underlying().(*types.Interface)
 	response := pkg.Scope().Lookup("Response").Type()
+	writeStringer := pkg.Scope().Lookup("WriteStringer").Type().Underlying().(*types.Interface)
 	fmt.Printf("type %s is implicate interface %s? %v\n", response, stringer, types.Implements(response, stringer))
+	fmt.Printf("type %s is implicate interface %s? %v\n", writeStringer, stringer, types.Implements(writeStringer, stringer))
+
+	fmt.Printf("interface %s assert to %s ? %v\n", stringer, response, types.AssertableTo(stringer, response))
+	fmt.Printf("interface %s assert to %s ? %v\n", writeStringer, stringer, types.AssertableTo(writeStringer, stringer))
+	fmt.Printf("type %s convert to %s ? %v\n", writeStringer, stringer, types.ConvertibleTo(writeStringer, stringer))
+
+	fmt.Printf("type %s convert to %s ? %v\n", intVal, intVal2, types.ConvertibleTo(intVal, intVal2))
+
+	{
+		byteType := pkg.Scope().Lookup("byteType").Type()
+		strType := pkg.Scope().Lookup("strType").Type()
+		fmt.Printf("type %s convert to %s ? %v\n", byteType, strType, types.ConvertibleTo(byteType, strType))
+	}
+	{
+		interfaceType := pkg.Scope().Lookup("interfaceType").Type()
+		int64Type := pkg.Scope().Lookup("int64Type").Type()
+		unintType := pkg.Scope().Lookup("unintType").Type()
+		fmt.Printf("type %s assign to %s ? %v\n", intVal, interfaceType, types.AssignableTo(intVal, interfaceType))
+
+		fmt.Printf("type %s assign to %s ? %v\n", int64Type, unintType, types.AssignableTo(int64Type, unintType))
+
+	}
 }

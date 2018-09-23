@@ -25,5 +25,4 @@ func TestJsonEncode(t *testing.T) {
 	err := json.NewEncoder(&buff).Encode(data)
 	assert.NoError(t, err)
 	t.Log(buff.String())
-
 }
