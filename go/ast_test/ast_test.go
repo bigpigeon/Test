@@ -309,7 +309,7 @@ func TestTypesCheck(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	ast.Print(fs, parserFile)
+	//ast.Print(fs, parserFile)
 	//ast.Inspect(parserFile, func(node ast.Node) bool {
 	//	switch x := node.(type) {
 	//	case *ast.Ident:
@@ -334,25 +334,34 @@ func TestTypesCheck(t *testing.T) {
 	//			fmt.Printf("field: %v\n", sType.Field(i))
 	//		}
 	//	}
-	//}
-
-	//fmt.Printf("defs\n")
-	//for k, v := range info.Defs {
-	//	fmt.Printf("%s \n |- %s %v : %#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
-	//	if v != nil {
-	//
-	//		if sType, ok := v.Type().(*types.Struct); ok {
-	//			for i := 0; i < sType.NumFields(); i++ {
-	//				fmt.Printf("field: %v\n", sType.Field(i))
-	//			}
+	//	if sType, ok := v.Type.(*types.Named); ok {
+	//		for i := 0; i < sType.NumMethods(); i++ {
+	//			fmt.Printf("method: %v\n", sType.Method(i))
 	//		}
 	//	}
 	//}
 	//
-	fmt.Printf("scopes\n")
-	for k, v := range info.Scopes {
-		fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	fmt.Printf("defs\n")
+	for k, v := range info.Defs {
+		fmt.Printf("%s \n |- %s %v : %#v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+
+		if v != nil {
+			if sType, ok := v.Type().(*types.Struct); ok {
+				for i := 0; i < sType.NumFields(); i++ {
+					fmt.Printf("field: %v\n", sType.Field(i))
+				}
+			} else if sType, ok := v.Type().(*types.Signature); ok {
+				fmt.Printf("signature: %v\n", sType)
+				fmt.Println(sType)
+			}
+
+		}
 	}
+	//
+	//fmt.Printf("scopes\n")
+	//for k, v := range info.Scopes {
+	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)
+	//}
 	//fmt.Printf("selectors\n")
 	//for k, v := range info.Selections {
 	//	fmt.Printf("%s \n |- %s %v : %v\n", fs.Position(k.Pos()), fs.Position(k.End()), k, v)

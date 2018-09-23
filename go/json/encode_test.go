@@ -26,3 +26,21 @@ func TestJsonEncode(t *testing.T) {
 	assert.NoError(t, err)
 	t.Log(buff.String())
 }
+
+type FloatList []float64
+
+func (f FloatList) MarshalJSON() ([]byte, error) {
+	return []byte(`"ivec object"`), nil
+}
+
+func TestFloatListEncode(t *testing.T) {
+	f := make(FloatList, 200)
+	buf := bytes.Buffer{}
+	err := json.NewEncoder(&buf).Encode(f)
+	assert.NoError(t, err)
+	t.Log(buf.String())
+	buf.Reset()
+	err = json.NewEncoder(&buf).Encode([]float64(f))
+	assert.NoError(t, err)
+	t.Log(buf.String())
+}
