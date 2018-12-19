@@ -37,3 +37,55 @@ func TestMapGet(t *testing.T) {
 	t.Log(string(b))
 
 }
+
+func TestMapAssign(t *testing.T) {
+	//{
+	//	m1 := map[string]int{
+	//		"1": 1,
+	//		"2": 2,
+	//	}
+	//	m1Val := reflect.ValueOf(m1)
+	//	m1Val.SetMapIndex(reflect.ValueOf("3"), reflect.ValueOf(1))
+	//}
+	//{
+	//	m2 := map[int]string{
+	//		1: "1",
+	//	}
+	//
+	//	m2Val := reflect.ValueOf(m2)
+	//	m2Val.SetMapIndex(reflect.ValueOf(1), reflect.ValueOf("3"))
+	//}
+	//{
+	//	type MyType struct {
+	//		ID int
+	//	}
+	//	m3 := map[MyType]string{
+	//		MyType{1}: "1",
+	//	}
+	//
+	//	mVal := reflect.ValueOf(m3)
+	//	mVal.SetMapIndex(reflect.ValueOf(MyType{1}), reflect.ValueOf("3"))
+	//}
+	{
+		m4 := map[interface{}]interface{}{
+			2:   3,
+			"1": 4,
+		}
+		mVal := reflect.ValueOf(m4)
+		iVal := 2
+		channel := make(chan int)
+		mVal.SetMapIndex(reflect.ValueOf(struct{}{}), reflect.ValueOf("3"))
+		mVal.SetMapIndex(reflect.ValueOf(&iVal), reflect.ValueOf("3"))
+		mVal.SetMapIndex(reflect.ValueOf(channel), reflect.ValueOf("3"))
+		mVal.SetMapIndex(reflect.ValueOf(0.0), reflect.ValueOf("3"))
+		mVal.SetMapIndex(reflect.ValueOf(-0.0), reflect.ValueOf("3"))
+		t.Log(m4)
+
+	}
+}
+
+func TestMapList(t *testing.T) {
+	a := make([]map[string]int, 2)
+	a[1]["22"] = 3
+	t.Log(a)
+}

@@ -10,10 +10,11 @@ type NotNilTime struct {
 	time.Time
 }
 
-func TestConvert(t *testing.T) {
-	a := NotNilTime{
-		time.Now(),
-	}
-	aVal := reflect.ValueOf(a)
+type TestType struct {
+	Name string
+}
 
+func TestTypePath(t *testing.T) {
+	typ := reflect.TypeOf(TestType{})
+	t.Log(typ.PkgPath(), typ.Name())
 }

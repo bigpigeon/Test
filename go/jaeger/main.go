@@ -50,18 +50,43 @@ func someFunction(name string) {
 		}
 		fmt.Printf("buff %v\n", buff.String())
 
-		newSpan, err := opentracing.GlobalTracer().Extract(opentracing.Binary, &buff)
+		httpBuff := opentracing.HTTPHeadersCarrier{}
+		err = opentracing.GlobalTracer().Inject(parent.Context(), opentracing.HTTPHeaders, &httpBuff)
 		if err != nil {
 			panic(err)
 		}
-		child := opentracing.GlobalTracer().StartSpan(
-			"world", opentracing.ChildOf(newSpan))
-		child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
-		child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
+		fmt.Printf("http header buff %v\n", httpBuff)
 
-		child.SetTag("error", true)
+		{
 
-		defer child.Finish()
+			newSpan, err := opentracing.GlobalTracer().Extract(opentracing.Binary, &buff)
+			if err != nil {
+				panic(err)
+			}
+			child := opentracing.GlobalTracer().StartSpan(
+				"world", opentracing.ChildOf(newSpan))
+			child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
+			child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
+
+			child.SetTag("error", true)
+
+			defer child.Finish()
+		}
+		{
+			newSpan, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, &opentracing.HTTPHeadersCarrier{})
+			if err != nil {
+				fmt.Printf("err %T\n", err)
+				panic(err)
+			}
+			child := opentracing.GlobalTracer().StartSpan(
+				"world http", opentracing.ChildOf(newSpan))
+			child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
+			child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
+
+			child.SetTag("error", true)
+
+			defer child.Finish()
+		}
 	}
 
 }

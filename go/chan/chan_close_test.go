@@ -16,6 +16,7 @@ func TestChanClose(t *testing.T) {
 		if i, more := <-a; more {
 			t.Log(i)
 		} else {
+			<-a
 			break
 		}
 

@@ -19,16 +19,15 @@
 package main
 
 import (
-	pb "github.com/bigpigeon/Test/go/grpc/helloworld"
+	"git.speakin.mobi/grpc_gen/thirdpart.git/metadata_test"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"log"
-	"os"
 )
 
 const (
-	address     = "localhost:50051"
+	address     = "192.168.1.106:9001"
 	defaultName = "world"
 )
 
@@ -39,20 +38,22 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
+	c := metadata_test.NewMetadataServiceClient(conn)
 
 	// Contact the server and print out its response.
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
+	//name := defaultName
+	//if len(os.Args) > 1 {
+	//	name = os.Args[1]
+	//}
 
 	md := metadata.New(map[string]string{"SpanEncode": "val1", "key2": "val2"})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
+	r, err := c.Call(ctx, &metadata_test.MetadataTestRequest{
+		Id: "1",
+	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.Message)
+	log.Printf("Greeting: %s", r.Data)
 }
