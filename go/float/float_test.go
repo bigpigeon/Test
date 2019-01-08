@@ -17,3 +17,8 @@ func TestFloatRound(t *testing.T) {
 	t.Log(a)
 	t.Log(math.Round(a))
 }
+
+func TestNan(t *testing.T) {
+	a := math.NaN()
+	t.Log(a)
+}

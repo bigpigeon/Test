@@ -2,6 +2,7 @@ package json_test
 
 import (
 	"encoding/json"
+	"math"
 	"testing"
 )
 
@@ -30,5 +31,14 @@ func TestEncode(t *testing.T) {
 			t.FailNow()
 		}
 		t.Logf("%#v\n", decodeData)
+	}
+}
+
+func TestEncodeNil(t *testing.T) {
+	data := math.NaN()
+	_, err := json.Marshal(data)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
 	}
 }

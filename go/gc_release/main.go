@@ -32,8 +32,9 @@ func main() {
 	//  bs[i] = nil
 	//}
 	bs = nil
-	runtime.GC()
-	time.Sleep(time.Second * 2)
+	//runtime.GC()
+	time.Sleep(time.Second * 5)
+
 	runtime.GC()
 	time.Sleep(time.Second * 2)
 }
