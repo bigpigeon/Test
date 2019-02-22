@@ -14,8 +14,8 @@ func main() {
 
 	cfg := config.Configuration{
 		Sampler: &config.SamplerConfig{
-			Type:  "const",
-			Param: 1,
+			Type:                    "const",
+			Param:                   1,
 			SamplingRefreshInterval: 1 * time.Second,
 		},
 		Reporter: &config.ReporterConfig{
@@ -40,8 +40,7 @@ func main() {
 
 func someFunction(name string) {
 	parent := opentracing.GlobalTracer().StartSpan(name)
-	defer parent.Finish()
-
+	parent.Finish()
 	{
 		buff := bytes.Buffer{}
 		err := opentracing.GlobalTracer().Inject(parent.Context(), opentracing.Binary, &buff)
@@ -72,21 +71,21 @@ func someFunction(name string) {
 
 			defer child.Finish()
 		}
-		{
-			newSpan, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, &opentracing.HTTPHeadersCarrier{})
-			if err != nil {
-				fmt.Printf("err %T\n", err)
-				panic(err)
-			}
-			child := opentracing.GlobalTracer().StartSpan(
-				"world http", opentracing.ChildOf(newSpan))
-			child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
-			child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
-
-			child.SetTag("error", true)
-
-			defer child.Finish()
-		}
+		//{
+		//	newSpan, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, &opentracing.HTTPHeadersCarrier{})
+		//	if err != nil {
+		//		fmt.Printf("err %T\n", err)
+		//		panic(err)
+		//	}
+		//	child := opentracing.GlobalTracer().StartSpan(
+		//		"world http", opentracing.ChildOf(newSpan))
+		//	child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
+		//	child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
+		//
+		//	child.SetTag("error", true)
+		//
+		//	defer child.Finish()
+		//}
 	}
 
 }

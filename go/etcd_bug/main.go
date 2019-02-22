@@ -12,9 +12,7 @@ func main() {
 	c, err := client.New(
 		client.Config{
 			Endpoints: []string{
-				"http://192.168.0.81:2379",
-				"http://192.168.0.82:2379",
-				"http://192.168.0.83:2379",
+				"http://localhost:2379",
 			},
 		})
 	if err != nil {

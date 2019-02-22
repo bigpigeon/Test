@@ -8,6 +8,7 @@ func TestChanClose(t *testing.T) {
 		a <- i
 	}
 	close(a)
+
 	//for i := 0; i < 10; i++ {
 	//	t.Log(<-a)
 	//}
@@ -16,7 +17,7 @@ func TestChanClose(t *testing.T) {
 		if i, more := <-a; more {
 			t.Log(i)
 		} else {
-			<-a
+			t.Log(<-a)
 			break
 		}
 

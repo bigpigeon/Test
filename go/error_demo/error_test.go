@@ -2,6 +2,7 @@ package error_demo
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 )
 
@@ -32,4 +33,21 @@ func TestError(t *testing.T) {
 			t.Log("err", e.Error())
 		}
 	}
+}
+
+func TestPanic(t *testing.T) {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("err", r)
+		}
+	}()
+	go func() {
+		//defer wg.Done()
+		a := []int{1, 2, 4}
+		fmt.Println(a[4])
+	}()
+	wg.Wait()
+	t.Log("done!!")
 }

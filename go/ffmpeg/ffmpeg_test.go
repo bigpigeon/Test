@@ -51,8 +51,8 @@ func TestMp4ToWav(t *testing.T) {
 	var errBuff bytes.Buffer
 	cmd.Stderr = &errBuff
 	d, err := cmd.Output()
+	t.Log(errBuff.String())
 	if err != nil {
-		t.Log(errBuff.String())
 		t.Error(err)
 	}
 
@@ -76,8 +76,8 @@ func TestMp4ToWavWithBuff(t *testing.T) {
 	var errBuff bytes.Buffer
 	cmd.Stderr = &errBuff
 	d, err := cmd.Output()
+	t.Log(errBuff.String())
 	if err != nil {
-		t.Log(errBuff.String())
 		t.Error(err)
 	}
 

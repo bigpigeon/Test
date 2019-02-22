@@ -65,7 +65,9 @@ func TestTimeLoc(t *testing.T) {
 	date, err := time.Parse(time.RFC3339, "2019-01-05T18:31:27+08:00")
 	require.NoError(t, err)
 	t.Log(date)
-
+	// unix test
+	t.Logf("unix Local %d UTC %d", date.Unix(), date.UTC().Unix())
+	assert.Equal(t, date.Unix(), date.UTC().Unix())
 	// with json
 	{
 

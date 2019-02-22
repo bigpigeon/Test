@@ -24,6 +24,7 @@ func fn() {
 }
 
 func main() {
+
 	fn()
 	println("begin gc")
 	//for i:=0; i<10; i++ {
