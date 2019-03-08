@@ -23,12 +23,11 @@ package main
 import (
 	"fmt"
 	pb "github.com/bigpigeon/Test/go/grpc/helloworld"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/log"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
+	"time"
 )
 
 const (
@@ -40,11 +39,6 @@ type server struct{}
 
 // SayHello implements helloworld.GreeterServer
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	span := opentracing.SpanFromContext(ctx)
-	if span != nil {
-		span.LogFields(log.String("user def", "test data"))
-	}
-	fmt.Println("append : ", ctx.Value("append"))
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
@@ -54,12 +48,14 @@ func main() {
 		fmt.Printf("failed to listen: %v\n", err)
 		return
 	}
-	//th := handlers.NewTraceHandler(handlers.NewTrace())
-	//s := grpc.NewServer(grpc.StatsHandler(th))
 	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
+	go func() {
+		time.Sleep(10 * time.Second)
+		s.Stop()
+	}()
 	if err := s.Serve(lis); err != nil {
 		panic(fmt.Sprintf("failed to serve: %v", err))
 	}

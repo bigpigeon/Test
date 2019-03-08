@@ -20,9 +20,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/bigpigeon/Test/go/grpc/handlers"
 	"github.com/bigpigeon/Test/go/grpc/helloworld"
-	"github.com/coreos/etcd/clientv3"
-	etcdnaming "github.com/coreos/etcd/clientv3/naming"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/log"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -31,20 +32,16 @@ import (
 )
 
 const (
-	address     = "my-server"
+	address     = "localhost:50051"
 	defaultName = "world"
 )
 
 func main() {
 	// Set up a connection to the server.
-	cli, cerr := clientv3.NewFromURL("http://localhost:2379")
-	if cerr != nil {
-		panic(cerr)
-	}
-	r := &etcdnaming.GRPCResolver{Client: cli}
-	b := grpc.RoundRobin(r)
-
-	conn, err := grpc.DialContext(context.Background(), address, grpc.WithBalancer(b), grpc.WithInsecure())
+	gCtx, _ := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	trace := handlers.NewTrace()
+	th := handlers.NewTraceHandler(trace)
+	conn, err := grpc.DialContext(gCtx, address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithStatsHandler(th))
 
 	if err != nil {
 		logger.Fatalf("did not connect: %v", err)
@@ -61,6 +58,8 @@ func main() {
 	md := metadata.New(map[string]string{"SpanEncode": "val1", "key2": "val2"})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	for {
+		span := trace.StartSpan("client global")
+		ctx = opentracing.ContextWithSpan(ctx, span)
 		r, err := c.SayHello(ctx, &helloworld.HelloRequest{
 			Name: "1",
 		})
@@ -69,6 +68,8 @@ func main() {
 			logger.Fatalf("could not greet: %v", err)
 		}
 		logger.Printf("Greeting: %s", r.Message)
+		span.LogFields(log.String("custom", "Greeting: "+r.Message))
+		span.Finish()
 		time.Sleep(1 * time.Second)
 	}
 }

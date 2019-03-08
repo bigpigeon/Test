@@ -1,6 +1,9 @@
 package _chan
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestChanClose(t *testing.T) {
 	a := make(chan int, 15)
@@ -22,4 +25,14 @@ func TestChanClose(t *testing.T) {
 		}
 
 	}
+}
+
+func TestChanSelectClose(t *testing.T) {
+	c := make(chan bool)
+	close(c)
+	select {
+	case <-c:
+		fmt.Println("close event")
+	}
+	fmt.Printf("chan %#v\n", c)
 }
