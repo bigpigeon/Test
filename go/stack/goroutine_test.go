@@ -16,11 +16,14 @@ import (
 
 func TestGetStack(t *testing.T) {
 	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		fmt.Println("test")
-		debug.PrintStack()
-	}()
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			fmt.Println("test")
+			debug.PrintStack()
+		}()
+	}
 	wg.Wait()
 }

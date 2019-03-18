@@ -39,13 +39,13 @@ func TestAacToWav(t *testing.T) {
 	t.Log(errorBuff.String())
 }
 
+// ffmpeg work well with file's io.Reader
 func TestMp4ToWav(t *testing.T) {
 	var f io.Reader
 	var err error
-	f, err = os.Open("input.m4a")
+	f, err = os.Open("test.m4a")
 	require.NoError(t, err)
-	cmdStr := []string{"-f", "mp4"}
-	cmdStr = append(cmdStr, strings.Split("-i /dev/stdin -ar 16000 -ac 1 -f wav -", " ")...)
+	cmdStr := strings.Split("-f mp4 -i /dev/stdin -ar 16000 -ac 1 -f wav -", " ")
 	cmd := exec.Command("ffmpeg", cmdStr...)
 	cmd.Stdin = f
 	var errBuff bytes.Buffer
@@ -61,29 +61,23 @@ func TestMp4ToWav(t *testing.T) {
 
 }
 
+// but not work with bytes.Buffer
 func TestMp4ToWavWithBuff(t *testing.T) {
 	var data []byte
 	var err error
-	data, err = ioutil.ReadFile("input.m4a")
+	data, err = ioutil.ReadFile("test.m4a")
 	require.NoError(t, err)
 
-	buff := bytes.NewBuffer(data)
-	// file
-	cmdStr := []string{"-f", "mp4"}
-	cmdStr = append(cmdStr, strings.Split("-i /dev/stdin -ar 16000 -ac 1 -f wav -", " ")...)
+	cmdStr := strings.Split("-f mp4 -i /dev/stdin -ar 16000 -ac 1 -f wav -", " ")
 	cmd := exec.Command("ffmpeg", cmdStr...)
-	cmd.Stdin = buff
+	cmd.Stdin = bytes.NewBuffer(data)
 	var errBuff bytes.Buffer
 	cmd.Stderr = &errBuff
 	d, err := cmd.Output()
 	t.Log(errBuff.String())
-	if err != nil {
-		t.Error(err)
-	}
-
+	require.NoError(t, err)
 	err = ioutil.WriteFile("output.wav", d, 0644)
 	assert.NoError(t, err)
-
 }
 
 func TestMp4ToWavWithNewFile(t *testing.T) {
