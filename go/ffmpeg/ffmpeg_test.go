@@ -68,7 +68,7 @@ func TestMp4ToWavWithBuff(t *testing.T) {
 	data, err = ioutil.ReadFile("test.m4a")
 	require.NoError(t, err)
 
-	cmdStr := strings.Split("-f mp4 -i /dev/stdin -ar 16000 -ac 1 -f wav -", " ")
+	cmdStr := strings.Split("-f mp4 -i pipe:0 -ar 16000 -ac 1 -f wav -", " ")
 	cmd := exec.Command("ffmpeg", cmdStr...)
 	cmd.Stdin = bytes.NewBuffer(data)
 	var errBuff bytes.Buffer
@@ -102,7 +102,6 @@ func TestMp4ToWavWithNewFile(t *testing.T) {
 		t.Log(errBuff.String())
 		t.Error(err)
 	}
-
 	err = ioutil.WriteFile("output.wav", d, 0644)
 	assert.NoError(t, err)
 }
