@@ -27,5 +27,21 @@ main(int argc, char **argv) {
     result = StrConv(str);
 	printf("cp %p\n", result);
 
+	char *cacheStr = (char *)(malloc(4));
+	memcpy(cacheStr,"abcd",4);
+	// cache
+	{
+		GoString s1 = {cacheStr, 4};
+		StrCache(s1);
+	}
+//	free(cacheStr);
+	cacheStr[0] = '1';
+//	printf("point %p\n",cachePtr);
+	{
+        GoString s1 = {cacheStr, 4};
+        StrCache(s1);
+    }
+
+
     return 0;
 }

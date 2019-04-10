@@ -13,6 +13,15 @@ import (
 	"unsafe"
 )
 
+var cache = map[string]struct{}{}
+
+func StrCopy(s string) string {
+	sb := make([]byte, len(s))
+	copy(sb, []byte(s))
+	fmt.Println("111", sb)
+	return string(sb)
+}
+
 //export StringCmp
 func StringCmp(s1, s2, s3 []byte) *C.char {
 	fmt.Printf("p %p, %p, %p\n", s1, s2, s3)
@@ -44,6 +53,14 @@ func StrConv(s1 string) *C.char {
 	s1C := C.CString(s1)
 	fmt.Printf("point %v\n", s1C)
 	return s1C
+}
+
+//export StrCache
+func StrCache(s1 string) {
+	fmt.Println("before", cache)
+	s2 := StrCopy(s1)
+	cache[s2] = struct{}{}
+	fmt.Println("after", cache)
 }
 
 //export Sum

@@ -1,3 +1,4 @@
 *.o
+*.a
 *.db
 go/gorm_demo/config.toml

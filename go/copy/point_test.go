@@ -7,7 +7,10 @@
 
 package copy
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestPointCopy(t *testing.T) {
 	{
@@ -24,4 +27,13 @@ func TestPointCopy(t *testing.T) {
 		*b = *a
 		t.Log(a == b)
 	}
+}
+
+func TestStrCopy(t *testing.T) {
+	str := "123"
+	strB := make([]byte, len(str))
+	copy(strB, str)
+	strC := str
+	strBS := string(strB)
+	fmt.Printf("a %p b %p c%p\n", &str, &strBS, &strC)
 }
