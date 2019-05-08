@@ -2,3 +2,4 @@
 *.a
 *.db
 go/gorm_demo/config.toml
+go/etcdv3/vendor/
