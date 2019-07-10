@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"github.com/bigpigeon/Test/go/module_demo/depend1"
 	"github.com/bigpigeon/Test/go/module_demo/depend2"
-	"github.com/sirupsen/logrus"
+	"reflect"
 )
 
 func main() {
 	fmt.Printf("%#v\n", depend1.DB)
 	fmt.Printf("%#v\n", depend2.DB)
-	logrus.Debug("123")
+	fmt.Printf("%v\n", reflect.TypeOf(depend1.DB) == reflect.TypeOf(depend2.DB))
 }

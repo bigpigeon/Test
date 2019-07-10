@@ -95,6 +95,7 @@ func main() {
 		}
 		return true
 	})
+
 }
 
 func TestAstStruct(t *testing.T) {

@@ -88,3 +88,8 @@ func TestTimeLoc(t *testing.T) {
 	}
 
 }
+
+func TestTimeNowCache(t *testing.T) {
+	timestamp := time.Now().Unix()
+	t.Log(timestamp)
+}

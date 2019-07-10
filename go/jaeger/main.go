@@ -7,8 +7,11 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+
 	"time"
 )
+
+var otherTrace opentracing.Tracer
 
 func main() {
 
@@ -31,16 +34,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	otherTrace, _, err = cfg.NewTracer(
+		config.Logger(jaeger.StdLogger),
+	)
 	opentracing.SetGlobalTracer(tracer)
 	//defer closer.Close()
 	someFunction("hello")
 	someFunction("fuck")
 	time.Sleep(5 * time.Second)
+
 }
 
 func someFunction(name string) {
 	parent := opentracing.GlobalTracer().StartSpan(name)
 	parent.Finish()
+	ctx := parent.Context().(jaeger.SpanContext)
+	fmt.Printf("parent trace %s parent %s span %s\n", ctx.TraceID(), ctx.ParentID(), ctx.SpanID())
+
 	{
 		buff := bytes.Buffer{}
 		err := opentracing.GlobalTracer().Inject(parent.Context(), opentracing.Binary, &buff)
@@ -62,11 +72,14 @@ func someFunction(name string) {
 			if err != nil {
 				panic(err)
 			}
-			child := opentracing.GlobalTracer().StartSpan(
+
+			child := otherTrace.StartSpan(
 				"world", opentracing.ChildOf(newSpan))
 			child.LogFields(log.String("level", "info"), log.String("event", "abcd"))
 			child.LogFields(log.String("level", "info2"), log.String("event", "abcd"))
+			ctx := child.Context().(jaeger.SpanContext)
 
+			fmt.Printf("child trace %s parent %s span %s\n", ctx.TraceID(), ctx.ParentID(), ctx.SpanID())
 			child.SetTag("error", true)
 
 			defer child.Finish()
