@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package info;
+
+service FileStorage {
+
+    rpc Upload (stream UploadStream) returns (UploadResponse) {}
+    rpc Download (DownloadRequest) returns (stream DownloadStream) {}
+}
+
+message UploadStream {
+    bytes data = 1;
+}
+
+message UploadResponse {
+    string key = 1;
+}
+
+message DownloadRequest {
+    string key = 1;
+}
+
+message DownloadStream {
+    bytes data = 1;
+}
