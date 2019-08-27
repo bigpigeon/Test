@@ -2,6 +2,7 @@ package error_demo
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -50,4 +51,22 @@ func TestPanic(t *testing.T) {
 	}()
 	wg.Wait()
 	t.Log("done!!")
+}
+
+type ErrSlice []string
+
+func (e ErrSlice) Error() string {
+	return strings.Join(e, "\n")
+}
+func TestSliceError(t *testing.T) {
+
+	err := func() error {
+		var errSlice ErrSlice
+		return errSlice
+	}()
+	if err == nil {
+		t.Log("nil err")
+	} else {
+		t.Log("not nil err", err)
+	}
 }

@@ -14,13 +14,14 @@ import (
 )
 
 func TestHttp(t *testing.T) {
+	// 创建一个gin的http服务
 	g := gin.New()
 	g.GET("/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
+	// 使用httptest直接调用http服务
 	recorder := httptest.NewRecorder()
 	g.ServeHTTP(recorder, httptest.NewRequest("GET", "/test", nil))
 	t.Log(recorder.Code)
 	t.Log(recorder.Body.String())
-
 }
