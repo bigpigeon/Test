@@ -33,3 +33,5 @@ require (
 	google.golang.org/grpc v1.17.0 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
+
+go 1.13

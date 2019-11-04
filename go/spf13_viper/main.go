@@ -18,13 +18,18 @@ func main() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.StringP("flagname", "f", "", "help flag name")
 	pflag.String("flag.name", "", "help flag name")
-	pflag.Parse()
 
 	err := viper.BindPFlags(pflag.CommandLine)
 	if err != nil {
 		panic(err)
 	}
-	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	err = pflag.CommandLine.Parse([]string{
+		"flagname", "cache", "flag.name", "help_filename",
+	})
+	if err != nil {
+		panic(err)
+	}
+	log.SetFlags(log.Llongfile)
 	log.Print(viper.Get("flagname"))
 	log.Print(viper.Get("flag.name"))
 	var data Data

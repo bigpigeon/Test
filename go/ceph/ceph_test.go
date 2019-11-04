@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"sort"
+	"sync"
 	"testing"
 	"time"
 )
@@ -16,7 +18,7 @@ import (
 var conn *rados.Conn
 
 const (
-	poolName     = "jiapool"
+	poolName     = "rados_meta_test"
 	radosBusy    = -16
 	radosExisted = -17
 	radosEnoent  = -2
@@ -40,11 +42,25 @@ func newConn() *rados.Conn {
 	if err != nil {
 		panic(err)
 	}
-	cephInitByFile(conn, "k8s_conf")
+	cephInitByFile(conn, "k8s_conf/89.conf")
 	err = conn.Connect()
 	if err != nil {
 		panic(err)
 	}
+
+	names, err := conn.ListPools()
+	if err != nil {
+		panic(err)
+	}
+
+	sort.Strings(names)
+	if sort.SearchStrings(names, poolName) == -1 {
+		err = conn.MakePool(poolName)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	return conn
 }
 
@@ -426,4 +442,37 @@ func TestRWLock(t *testing.T) {
 	err = lock.UnLock()
 	assert.NoError(t, err)
 
+}
+
+func TestConcurrencyLockShared(t *testing.T) {
+	// open a pool handle
+	oid := "concurrency_lock_shared"
+	oidLock := "lock"
+	maxExpired := time.Minute
+	times := 100
+	wg := sync.WaitGroup{}
+	wg.Add(times)
+	for i := 0; i < times; i++ {
+		go func(i int) {
+			defer wg.Done()
+			ioctx, err := conn.OpenIOContext(poolName)
+			require.NoError(t, err)
+			res, err := ioctx.LockShared(oid, oidLock, "cookie"+fmt.Sprint(i), "", "lock test", maxExpired, nil)
+			assert.NoError(t, err)
+			assert.Equal(t, 0, res)
+		}(i)
+	}
+	wg.Wait()
+	wg.Add(times)
+	for i := 0; i < times; i++ {
+		go func(i int) {
+			defer wg.Done()
+			ioctx, err := conn.OpenIOContext(poolName)
+			require.NoError(t, err)
+			res, err := ioctx.Unlock(oid, oidLock, "cookie"+fmt.Sprint(i))
+			assert.NoError(t, err)
+			assert.Equal(t, 0, res)
+		}(i)
+	}
+	wg.Wait()
 }

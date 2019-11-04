@@ -58,10 +58,19 @@ func TestReadEnv(t *testing.T) {
 	require.NoError(t, err)
 	id := viper.Get("id") // 13
 	t.Log(id)
-	viper.AutomaticEnv()
 	err = os.Setenv("SPF_NAME", "test")
+	viper.AutomaticEnv()
 	require.NoError(t, err)
 	t.Log(viper.Get("name"))
+	t.Log(viper.Get("name"))
+	type D1 struct {
+		Name string `mapstructure:"SPF_NAME"`
+	}
+	var d1 D1
+	err = viper.UnmarshalKey("Name", &d1.Name)
+	require.NoError(t, err)
+	t.Logf("%+v\n", d1)
+	viper.SetConfigType()
 }
 
 func TestReadFlags(t *testing.T) {

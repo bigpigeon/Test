@@ -1,6 +1,7 @@
 package error_demo
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -68,5 +69,58 @@ func TestSliceError(t *testing.T) {
 		t.Log("nil err")
 	} else {
 		t.Log("not nil err", err)
+	}
+}
+
+func errorDeferProcess() (int, error) {
+	return 0, errors.New("has error")
+}
+
+func ErrorDeferProcess(t *testing.T) (v [20]byte, err error) {
+	defer func() {
+		if err != nil {
+			t.Log(err)
+		}
+	}()
+
+	n, err := errorDeferProcess()
+	n = n
+	if err != nil {
+		return
+	}
+	return [20]byte{}, nil
+}
+
+//
+//func ErrorDeferBlockProcess(t *testing.T) (err error) {
+//	defer func() {
+//		if err != nil {
+//			t.Log(err)
+//		}
+//	}()
+//	{
+//		n, err := errorDeferProcess()
+//		n = n
+//		if err != nil {
+//			t.Log(err)
+//			return
+//		}
+//	}
+//	return
+//}
+
+func TestDeferProcessError(t *testing.T) {
+	ErrorDeferProcess(t)
+	//ErrorDeferBlockProcess(t)
+}
+
+type HashKey [20]byte
+
+func TestHashKeyCompare(t *testing.T) {
+	key := HashKey{}
+	if key != [20]byte{} {
+		t.Log("no equal")
+	} else {
+		t.Log("no equal")
 	}
 }

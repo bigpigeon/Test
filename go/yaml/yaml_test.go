@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
+	"strings"
 	"testing"
 )
 
@@ -53,4 +54,15 @@ func TestYamlEncodeMultiline(t *testing.T) {
 	err := yaml.NewEncoder(&writer).Encode(data)
 	require.NoError(t, err)
 	t.Log(writer.String())
+}
+
+func TestDefaultType(t *testing.T) {
+	data := `
+replicaCount: 2
+`
+
+	receiver := map[string]interface{}{}
+	err := yaml.NewDecoder(strings.NewReader(data)).Decode(&receiver)
+	require.NoError(t, err)
+	t.Logf("%T %v", receiver["replicaCount"], receiver["replicaCount"])
 }

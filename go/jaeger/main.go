@@ -7,6 +7,7 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"io"
 
 	"time"
 )
@@ -24,24 +25,31 @@ func main() {
 		Reporter: &config.ReporterConfig{
 			LogSpans:            true,
 			BufferFlushInterval: 1 * time.Second,
-			LocalAgentHostPort:  "192.168.0.1:6831",
+			//LocalAgentHostPort:  "192.168.0.1:6831",
 		},
 		ServiceName: "test ",
 	}
-	tracer, _, err := cfg.NewTracer(
+	tracer, closer, err := cfg.NewTracer(
 		config.Logger(jaeger.StdLogger),
 	)
 	if err != nil {
 		panic(err)
 	}
-	otherTrace, _, err = cfg.NewTracer(
+	defer closer.Close()
+	var otherCloser io.Closer
+	otherTrace, otherCloser, err = cfg.NewTracer(
 		config.Logger(jaeger.StdLogger),
 	)
+	if err != nil {
+		panic(err)
+	}
+	defer otherCloser.Close()
+
 	opentracing.SetGlobalTracer(tracer)
 	//defer closer.Close()
 	someFunction("hello")
 	someFunction("fuck")
-	time.Sleep(5 * time.Second)
+	//time.Sleep(5 * time.Second)
 
 }
 

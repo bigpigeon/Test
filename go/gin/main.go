@@ -14,13 +14,30 @@ type TestData struct {
 	IntVal int64
 }
 
+type TestQuerySub struct {
+	SubData string `form:"sub_data"`
+}
+
+type TestQuery struct {
+	Name    string       `form:"name"`
+	Address string       `form:"address"`
+	Sub     TestQuerySub `form:"sub"`
+}
+
 func main() {
-	r := gin.Default()
-	data := TestData{
-		IntVal: 6446744073709551610,
-	}
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, data)
+	r1 := gin.Default()
+	//data := TestData{
+	//	IntVal: 6446744073709551610,
+	//}
+
+	r1.GET("", func(c *gin.Context) {
+		var query TestQuery
+		err := c.BindQuery(&query)
+		if err != nil {
+			panic(err)
+		}
+		c.JSON(200, query)
 	})
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r1.Run()
+
 }

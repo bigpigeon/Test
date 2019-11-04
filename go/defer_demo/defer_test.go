@@ -33,3 +33,13 @@ func TestScopeDefer(t *testing.T) {
 		fmt.Println("out main scope")
 	}()
 }
+
+func TestDeferRefence(t *testing.T) {
+	var ret int
+	defer func() {
+		fmt.Println(ret)
+	}()
+
+	ret = 2
+
+}
