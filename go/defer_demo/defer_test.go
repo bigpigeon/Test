@@ -43,3 +43,22 @@ func TestDeferRefence(t *testing.T) {
 	ret = 2
 
 }
+
+type XX struct {
+	A string
+}
+
+func (x *XX) Foo() {
+	fmt.Println(x.A)
+}
+
+func TestDeferMethod(t *testing.T) {
+	var x *XX
+	for _, v := range []string{
+		"AA",
+		"BB",
+	} {
+		x = &XX{A: v}
+		defer x.Foo()
+	}
+}

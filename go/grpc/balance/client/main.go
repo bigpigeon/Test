@@ -23,6 +23,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -40,7 +41,7 @@ const (
 var addrs = []string{"localhost:50051", "localhost:50052"}
 
 func callUnaryEcho(c ecpb.EchoClient, message string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
 	defer cancel()
 	r, err := c.UnaryEcho(ctx, &ecpb.EchoRequest{Message: message})
 	if err != nil {
@@ -90,8 +91,16 @@ func roundRobin() {
 
 func main() {
 	//pickFirst()
-	fmt.Println()
-	roundRobin()
+	wg := sync.WaitGroup{}
+	for i := 0; i < 3; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			roundRobin()
+		}()
+	}
+	wg.Wait()
 
 }
 

@@ -13,6 +13,8 @@ import (
 	"io"
 	"io/ioutil"
 	"os/exec"
+	"sync/atomic"
+	"time"
 )
 
 func ExecCmd(appCmd string) (string, string, error) {
@@ -75,6 +77,7 @@ func ExecCmd(appCmd string) (string, string, error) {
 }
 
 func main() {
+	time.Sleep(10000 * time.Second)
 	stdout, stderr, err := ExecCmd("test.sh")
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)

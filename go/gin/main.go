@@ -30,7 +30,7 @@ func main() {
 	//	IntVal: 6446744073709551610,
 	//}
 
-	r1.GET("", func(c *gin.Context) {
+	r1.GET("/abc", func(c *gin.Context) {
 		var query TestQuery
 		err := c.BindQuery(&query)
 		if err != nil {

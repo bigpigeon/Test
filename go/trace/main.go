@@ -8,8 +8,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"runtime"
+	"runtime/trace"
+	"sync"
+	"time"
 )
 
 type stack []uintptr
@@ -22,8 +27,7 @@ func caller() *stack {
 	return &st
 }
 
-func main() {
-
+func printFrames() {
 	st := caller()
 	frames := runtime.CallersFrames(*st)
 	for {
@@ -37,5 +41,59 @@ func main() {
 		//	fmt.Printf("  in func %s line %d file %s\n", f.Func.Name(), line, file)
 		//}
 	}
+}
 
+func printTrace() {
+
+	// create new channel of type int
+	ch := make(chan int)
+
+	// start new anonymous goroutine
+	go func() {
+		// send 42 to channel
+		ch <- 42
+	}()
+	// read fro
+}
+
+func StartTrace(name string) func() {
+	buff := bytes.Buffer{}
+	err := trace.Start(&buff)
+	if err != nil {
+		panic(err)
+	}
+	return func() {
+		trace.Stop()
+		err := ioutil.WriteFile(name, buff.Bytes(), 0644)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func traceAfterSleep() {
+	time.Sleep(time.Second)
+
+	tra := StartTrace("traceAfterSleep.out")
+	defer tra()
+	printTrace()
+}
+
+func traceInRoutine() {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		tra := StartTrace("traceInRoutine.out")
+		defer tra()
+		fmt.Println("do sth")
+	}()
+	time.Sleep(time.Second)
+	wg.Wait()
+}
+
+func main() {
+	printFrames()
+	traceAfterSleep()
+	traceInRoutine()
 }

@@ -12,13 +12,16 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/codes"
 	ecpb "google.golang.org/grpc/examples/features/proto/echo"
 	"google.golang.org/grpc/status"
 	"log"
 	"net"
+	"os"
 	"runtime"
 	"testing"
+	"time"
 )
 
 type ecServer struct {
@@ -55,26 +58,28 @@ type Conn struct{ *grpc.ClientConn }
 
 func TestGrpcNoClose(t *testing.T) {
 	addr := "localhost:50051"
-	//go startServer(addr)
+	go startServer(addr)
+	fmt.Println("current pid", os.Getpid())
 
 	var stats runtime.MemStats
 	runtime.ReadMemStats(&stats)
 	t.Log("total", stats.TotalAlloc, "heap", stats.HeapAlloc)
 	for i := 0; i < 5000; i++ {
-		conn, err := grpc.DialContext(context.Background(), addr, grpc.WithInsecure())
+		conn, err := grpc.DialContext(context.Background(), addr, grpc.WithInsecure(),
+			grpc.WithBalancerName(roundrobin.Name), grpc.WithBlock())
 		require.NoError(t, err)
 		cli := ecpb.NewEchoClient(conn)
 		runtime.SetFinalizer(cli, func(cli ecpb.EchoClient) {
-			fmt.Println("lease once")
-			conn.Close()
+			//fmt.Println("lease once")
+			//conn.Close()
 		})
 		_, err = cli.UnaryEcho(context.Background(), &ecpb.EchoRequest{Message: "abc"})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
 	}
-
 	runtime.GC()
 	t.Log("total", stats.TotalAlloc, "heap", stats.HeapAlloc)
-	//time.Sleep(time.Second * 10000)
+
+	time.Sleep(time.Second * 100000)
 }

@@ -21,15 +21,15 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log"
-	"net"
-	"sync"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	ecpb "google.golang.org/grpc/examples/features/proto/echo"
 	"google.golang.org/grpc/status"
+	"log"
+	"net"
+	"sync"
 )
 
 var (
@@ -37,10 +37,15 @@ var (
 )
 
 type ecServer struct {
-	addr string
+	addr  string
+	isErr bool
 }
 
 func (s *ecServer) UnaryEcho(ctx context.Context, req *ecpb.EchoRequest) (*ecpb.EchoResponse, error) {
+	if s.isErr {
+		return nil, errors.New("must error")
+	}
+
 	return &ecpb.EchoResponse{Message: fmt.Sprintf("%s (from %s)", req.Message, s.addr)}, nil
 }
 func (s *ecServer) ServerStreamingEcho(*ecpb.EchoRequest, ecpb.Echo_ServerStreamingEchoServer) error {
@@ -53,13 +58,13 @@ func (s *ecServer) BidirectionalStreamingEcho(ecpb.Echo_BidirectionalStreamingEc
 	return status.Errorf(codes.Unimplemented, "not implemented")
 }
 
-func startServer(addr string) {
+func startServer(addr string, isErr bool) {
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
-	ecpb.RegisterEchoServer(s, &ecServer{addr: addr})
+	s := grpc.NewServer(grpc.MaxConcurrentStreams(1))
+	ecpb.RegisterEchoServer(s, &ecServer{addr: addr, isErr: isErr})
 	log.Printf("serving on %s\n", addr)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
@@ -68,12 +73,16 @@ func startServer(addr string) {
 
 func main() {
 	var wg sync.WaitGroup
-	for _, addr := range addrs {
+	for i, addr := range addrs {
+		var isErr bool
+		if i == 0 {
+			isErr = true
+		}
 		wg.Add(1)
-		go func(addr string) {
+		go func(addr string, isErr bool) {
 			defer wg.Done()
-			startServer(addr)
-		}(addr)
+			startServer(addr, isErr)
+		}(addr, isErr)
 	}
 	wg.Wait()
 }
