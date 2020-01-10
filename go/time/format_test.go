@@ -9,6 +9,9 @@ import (
 )
 
 func TestFormat(t *testing.T) {
+	start := time.Now()
+	time.Sleep(1 * time.Second)
+	t.Log(time.Since(start).Seconds())
 	pTime, err := time.Parse(time.RFC3339, "2002-10-02T10:00:00Z")
 	assert.NoError(t, err)
 	t.Log(pTime)

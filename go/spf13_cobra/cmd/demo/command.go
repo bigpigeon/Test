@@ -31,6 +31,7 @@ var versionCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	versionCmd.PersistentFlags().Bool("detail", false, "detail output")
 }
 
 func Execute() {
