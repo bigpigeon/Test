@@ -1,8 +1,11 @@
 package json_test
 
 import (
+	"bytes"
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"math"
+	"strconv"
 	"testing"
 )
 
@@ -72,4 +75,35 @@ func TestEncodeNil(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+func TestJsonEncodeDecode(t *testing.T) {
+	type Data struct {
+		Msg string `json:"msg"`
+	}
+	var buff bytes.Buffer
+	encoder := json.NewEncoder(&buff)
+	decoder := json.NewDecoder(&buff)
+	for i := 0; i < 100; i++ {
+		d := Data{Msg: "val" + strconv.Itoa(i)}
+		err := encoder.Encode(d)
+		require.NoError(t, err)
+		err = encoder.Encode(d)
+		require.NoError(t, err)
+		{
+
+			var dd Data
+			err = decoder.Decode(&dd)
+			require.NoError(t, err)
+		}
+		{
+			var dd Data
+			err = decoder.Decode(&dd)
+			require.NoError(t, err)
+			t.Log(dd)
+			require.Equal(t, d, dd)
+
+		}
+	}
+
 }

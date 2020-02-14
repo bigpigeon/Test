@@ -11,7 +11,10 @@ import (
 	"go/ast"
 	"go/build"
 	"go/parser"
+	"go/printer"
 	"go/token"
+	"os"
+
 	//"sort"
 	"go/importer"
 	"go/types"
@@ -36,6 +39,39 @@ func TestAstPrint(t *testing.T) {
 		err = ast.Print(fs, f)
 		if err != nil {
 			panic(err)
+		}
+	}
+}
+
+type visitor struct{ fs *token.FileSet }
+
+func (s visitor) Visit(node ast.Node) ast.Visitor {
+	switch n := node.(type) {
+	case *ast.BasicLit:
+		n.Value = n.Value + "xxx"
+	}
+	return s
+}
+func TestAstMergeLinePrint(t *testing.T) {
+
+	// Create the AST by parsing src.
+	fs := token.NewFileSet() // positions are relative to fset
+
+	fMap, err := parser.ParseDir(fs, directory, nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	cfg := printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 8}
+
+	// Print the AST.
+	for _, f := range fMap {
+
+		ast.Walk(visitor{fs: fs}, f)
+		for _, f := range f.Files {
+			err = cfg.Fprint(os.Stdout, fs, f)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
