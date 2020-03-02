@@ -18,5 +18,4 @@ func PrintBuildInfo() {
 		panic("not support read build info")
 	}
 	fmt.Printf("%#v\n", info)
-	dep.Read
 }
