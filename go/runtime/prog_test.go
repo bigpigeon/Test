@@ -5,14 +5,4 @@
  *
  */
 
-package runtime
-
-import (
-	"runtime"
-	"testing"
-)
-
-func TestProg(t *testing.T) {
-	runtime.GOMAXPROCS()
-
-}
+package main
