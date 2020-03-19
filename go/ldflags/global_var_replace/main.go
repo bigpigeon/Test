@@ -9,16 +9,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/bigpigeon/Test/go/runtime/dep"
-	"runtime/debug"
+	"github.com/bigpigeon/Test/go/ldflags/global_var_replace/submodule"
 )
 
 func main() {
-
-	info, ok := debug.ReadBuildInfo()
-	if ok == false {
-		panic("not support read build info")
-	}
-	fmt.Printf("%#v\n", info)
-	dep.PrintBuildInfo()
+	fmt.Printf("replace variable '%s'\n", submodule.ReplaceVal)
 }
