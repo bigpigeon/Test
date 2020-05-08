@@ -7,51 +7,53 @@
 
 package main
 
-import "math/bits"
+import (
+	"fmt"
+)
 
 type CacheLines struct {
 	data []byte
-	way  int
+	ways int
 }
 
-func (c CacheLines) GetWay(n int) Way {
-	return Way{
-		data: c.data[n*64*8 : (n+1)*64*8],
-		way:  c.way,
+func (c CacheLines) Get(n int) CacheLine {
+	return CacheLine{
+		data: c.data[n*64*c.ways : (n+1)*64*c.ways],
+		way:  c.ways,
 	}
 }
 
-type Cacheline struct {
+type CacheLine struct {
 	data []byte
 	way  int
 }
 
-func (w Cacheline) Way(n int) {
-
+func (w CacheLine) Way(n int) Way {
+	preWayLen := len(w.data) / w.way
+	d := w.data[n*preWayLen : (n+1)*preWayLen]
+	fmt.Println(len(d))
+	return Way{
+		tag:    0,
+		index:  0,
+		offset: 0,
+	}
 }
 
 type Way struct {
-	data []byte
+	tag    int8
+	index  int8
+	offset int8
 }
 
-type Bits struct {
-	data []byte
-	size int
-}
+func NWayCache() CacheLines {
+	l1 := make([]byte, 8*1024)
+	cacheLines := CacheLines{data: l1, ways: 4}
 
-func NewBits(data []byte, offset, size int) Bits {
-	return Bits{
-		data: data[offset : offset+size],
-		size: size,
-	}
-}
-
-func NWayCache(n int) {
-	l1 := make([]byte, 32*1024)
-	cacheLines := CacheLines{data: l1, way: 8}
-
+	return cacheLines
 }
 
 func main() {
-
+	lines := NWayCache()
+	way := lines.Get(0).Way(0)
+	fmt.Printf("way %#v", way)
 }

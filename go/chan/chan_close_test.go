@@ -13,19 +13,19 @@ func TestChanClose(t *testing.T) {
 	}
 	close(a)
 
-	//for i := 0; i < 10; i++ {
-	//	t.Log(<-a)
-	//}
-
-	for {
-		if i, more := <-a; more {
-			t.Log(i)
-		} else {
-			t.Log(<-a)
-			break
-		}
-
+	for i := 0; i < 10; i++ {
+		t.Log(<-a)
 	}
+
+	//for {
+	//	if i, more := <-a; more {
+	//		t.Log(i)
+	//	} else {
+	//		t.Log(<-a)
+	//		break
+	//	}
+	//
+	//}
 }
 
 func TestChanSelectClose(t *testing.T) {

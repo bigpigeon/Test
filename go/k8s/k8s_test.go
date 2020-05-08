@@ -12,6 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/informers"
+	"os"
 	"testing"
 	"time"
 )
@@ -51,4 +52,13 @@ func TestGetSecret(t *testing.T) {
 			t.Log(v.Name)
 		}
 	}
+}
+
+func TestAppsV1GetDeploy(t *testing.T) {
+	deps, err := clientset.AppsV1().Deployments("default").List(metav1.ListOptions{})
+	require.NoError(t, err)
+	for _, dep := range deps.Items {
+		t.Log(dep.Name)
+	}
+	os.OpenFile()
 }
