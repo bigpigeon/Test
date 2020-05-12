@@ -7,7 +7,9 @@
 
 package depend3
 
-//go:generate echo hello
-func lib() {
+import "fmt"
 
+//go:generate echo hello
+func SomeOutput() {
+	fmt.Println("some output")
 }
