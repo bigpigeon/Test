@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/balancer/grpclb"
 	ecpb "google.golang.org/grpc/examples/features/proto/echo"
 	"google.golang.org/grpc/resolver"
 )
@@ -76,7 +77,8 @@ func roundRobin() {
 	// Make another ClientConn with round_robin policy.
 	roundrobinConn, err := grpc.Dial(
 		fmt.Sprintf("%s:///%s", exampleScheme, exampleServiceName),
-		grpc.WithBalancerName("round_robin"), // This sets the initial balancing policy.
+
+		grpc.WithBalancerName("grpclb"), // This sets the initial balancing policy.
 		grpc.WithInsecure(),
 	)
 	if err != nil {

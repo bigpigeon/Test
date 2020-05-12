@@ -63,6 +63,7 @@ func main() {
 		r, err := c.SayHello(ctx, &helloworld.HelloRequest{
 			Name: "1",
 		})
+
 		fmt.Println("??")
 		if err != nil {
 			logger.Fatalf("could not greet: %v", err)
