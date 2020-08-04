@@ -1,4 +1,4 @@
-package defer_demo
+package main
 
 import (
 	"fmt"
@@ -61,4 +61,11 @@ func TestDeferMethod(t *testing.T) {
 		x = &XX{A: v}
 		defer x.Foo()
 	}
+}
+
+func TestDeferPanic(t *testing.T) {
+	defer func() {
+		fmt.Println("aa")
+	}()
+	panic("bb")
 }

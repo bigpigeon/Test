@@ -36,3 +36,10 @@ func TestMapIter(t *testing.T) {
 		t.Log(k, v)
 	}
 }
+
+func TestMapConcurrent(t *testing.T) {
+	m := make(map[int]int, 1000)
+	for i := 0; i < 10000; i++ {
+		m[i] = i
+	}
+}

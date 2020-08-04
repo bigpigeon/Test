@@ -13,7 +13,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os/exec"
-	"sync/atomic"
+	"sync"
 	"time"
 )
 
@@ -82,6 +82,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}
+	sync.Mutex{}
 
 	fmt.Printf("STDOUT: %s\n", stdout)
 	fmt.Printf("STDERR: %s\n", stderr)
