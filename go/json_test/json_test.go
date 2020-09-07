@@ -77,6 +77,14 @@ func TestEncodeNil(t *testing.T) {
 	}
 }
 
+func TestNilInterface(t *testing.T) {
+	var v interface{}
+	data := `{"a":"b"}`
+	err := json.Unmarshal([]byte(data), &v)
+	require.NoError(t, err)
+	t.Log(v)
+}
+
 func TestJsonEncodeDecode(t *testing.T) {
 	type Data struct {
 		Msg string `json:"msg"`

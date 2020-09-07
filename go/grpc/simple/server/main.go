@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	port = ":9090"
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -42,6 +42,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func main() {
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		fmt.Printf("failed to listen: %v\n", err)

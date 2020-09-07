@@ -3,6 +3,7 @@ package error_demo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -16,6 +17,13 @@ func (e ErrMap) Error() string {
 		s += fmt.Sprintf("%d %s;", k, v)
 	}
 	return s
+}
+
+func TestNilError(t *testing.T) {
+	var err error = errors.New("xxx")
+	eVal := reflect.ValueOf(err)
+	v := eVal.Interface().(error)
+	t.Log(v)
 }
 
 func TestError(t *testing.T) {

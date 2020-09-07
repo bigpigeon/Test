@@ -24,8 +24,10 @@ func init() {
 }
 func BenchmarkSlice(b *testing.B) {
 	a := make([]byte, len(s))
-	for i := 0; i < len(s); i++ {
-		a[i] = s[i]
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < len(s); i++ {
+			a[i] = s[i]
+		}
 	}
 }
 

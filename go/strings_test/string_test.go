@@ -16,3 +16,8 @@ func TestSplit(t *testing.T) {
 	vv := strings.Split("", ",")
 	t.Log(vv, len(vv))
 }
+
+func TestConvert(t *testing.T) {
+	t.Logf(`"%s"`, string([]byte(nil)))
+	t.Logf(`"%s"`, string([]byte{}))
+}

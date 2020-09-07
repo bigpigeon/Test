@@ -22,7 +22,7 @@ func TestHistogram(t *testing.T) {
 		Subsystem: "test",
 		Name:      "histogram_test_bucket",
 		Help:      "test histogram bucket",
-		Buckets:   prometheus.ExponentialBuckets(0.001, 2, 14),
+		//Buckets:   prometheus.ExponentialBuckets(0.001, 2, 14),
 	})
 	err := prometheus.Register(histogram)
 	require.NoError(t, err)

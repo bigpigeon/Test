@@ -7,25 +7,25 @@ import (
 )
 
 func TestChanClose(t *testing.T) {
-	a := make(chan int, 15)
+	a := make(chan int, 10)
 	for i := 0; i < 10; i++ {
 		a <- i
 	}
 	close(a)
 
-	//for i := 0; i < 10; i++ {
-	//	t.Log(<-a)
-	//}
-
-	for {
-		if i, more := <-a; more {
-			t.Log(i)
-		} else {
-			t.Log(<-a)
-			break
-		}
-
+	for i := 0; i < 12; i++ {
+		t.Log(<-a)
 	}
+
+	//for {
+	//	if i, more := <-a; more {
+	//		t.Log(i)
+	//	} else {
+	//		t.Log(<-a)
+	//		break
+	//	}
+	//
+	//}
 }
 
 func TestChanSelectClose(t *testing.T) {

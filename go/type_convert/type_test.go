@@ -1,6 +1,8 @@
 package type_convert
 
 import (
+	"io"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -17,4 +19,11 @@ func TestConvert(t *testing.T) {
 	var v interface{} = ti
 	_, ok := v.(*time.Time)
 	t.Log(ok)
+}
+
+func TestName(t *testing.T) {
+	//var i *int
+	var reader io.Reader
+	iTyp := reflect.TypeOf(reader)
+	t.Log(iTyp.String())
 }

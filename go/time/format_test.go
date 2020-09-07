@@ -96,3 +96,33 @@ func TestTimeNowCache(t *testing.T) {
 	timestamp := time.Now().Unix()
 	t.Log(timestamp)
 }
+
+func BenchmarkGetTime(b *testing.B) {
+
+	for i := 0; i < b.N; i++ {
+		time.Now()
+	}
+}
+
+func TestGetUseTime(t *testing.T) {
+	defer func(now time.Time) { t.Log("use time", time.Since(now)) }(time.Now())
+	time.Sleep(1 * time.Second)
+}
+
+func TestDurationParse(t *testing.T) {
+	{
+		ti, err := time.ParseDuration("1s")
+		require.NoError(t, err)
+		t.Log(ti)
+	}
+	{
+		ti, err := time.ParseDuration("1.5s")
+		require.NoError(t, err)
+		t.Log(ti)
+	}
+	{
+		ti, err := time.ParseDuration("0.05s")
+		require.NoError(t, err)
+		t.Log(ti)
+	}
+}

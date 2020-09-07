@@ -3,6 +3,7 @@ package options
 import (
 	"bytes"
 	"encoding/gob"
+	"google.golang.org/grpc/codes"
 	"reflect"
 )
 
@@ -57,3 +58,5 @@ func (CodecHandlers) Unmarshal(data []byte, v interface{}) error {
 func (CodecHandlers) String() string {
 	return "codec handlers"
 }
+
+const TooLong codes.Code = 1024

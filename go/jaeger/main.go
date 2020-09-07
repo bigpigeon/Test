@@ -55,6 +55,7 @@ func main() {
 
 func someFunction(name string) {
 	parent := opentracing.GlobalTracer().StartSpan(name)
+
 	parent.Finish()
 	ctx := parent.Context().(jaeger.SpanContext)
 	fmt.Printf("parent trace %s parent %s span %s\n", ctx.TraceID(), ctx.ParentID(), ctx.SpanID())

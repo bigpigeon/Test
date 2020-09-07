@@ -17,6 +17,7 @@ git.speakin.mobi/infrastructure/service_launch.git v0.0.0-20181029120021-3af180b
 git.speakin.mobi/infrastructure/service_launch.git v0.0.0-20181029120021-3af180b242df/go.mod h1:rXDS4OltjWDiLxTmeONgkLp2lTYBf1caHKv+s2CF2H8=
 github.com/astaxie/beego v1.10.1 h1:M2ciUnyiZycuTpGEA+idJF0gX24h58EbPvGqjnO/DCg=
 github.com/astaxie/beego v1.10.1/go.mod h1:0R4++1tUqERR0WYFWdfkcrsyoVBCG4DgpDGokT3yb+U=
+github.com/bigpigeon/Test v0.0.0-20200512104904-915739c9a1e3 h1:dDMuD16MZddUTyv/x/MUMtuM2UxQQPPIDaaTHaweEaM=
 github.com/bigpigeon/Test/go/module_demo/depend1 v0.0.0-20181113070655-c58e66e5b9f3 h1:qHuwnUoh2NS0dndhBTqr41hXCgruqXOKZclavQf7n9g=
 github.com/bigpigeon/Test/go/module_demo/depend1 v0.0.0-20181113070655-c58e66e5b9f3/go.mod h1:rK6u8hN32GTYkAMg1lDir/L4RhjiMc1B828wNRFrkhk=
 github.com/bigpigeon/Test/go/module_demo/depend1 v0.0.0-20190508084926-c57629d85eb0 h1:yu6gi4vtyUsNATGIB1uBtS9bsvVmz+Wemd6UTLsiN14=
@@ -25,6 +26,8 @@ github.com/bigpigeon/Test/go/module_demo/depend2 v0.0.0-20181113070655-c58e66e5b
 github.com/bigpigeon/Test/go/module_demo/depend2 v0.0.0-20181113070655-c58e66e5b9f3/go.mod h1:KsO7rdXqlHKGw5HchtqAD6ouaSiagE1qATJiIKMIOEk=
 github.com/bigpigeon/Test/go/module_demo/depend2 v0.0.0-20190508084926-c57629d85eb0 h1:AcsLvtNvg1nWI9DALQ9Arqz96rfi28Iz67i6sfGXi1Q=
 github.com/bigpigeon/Test/go/module_demo/depend2 v0.0.0-20190508084926-c57629d85eb0/go.mod h1:KsO7rdXqlHKGw5HchtqAD6ouaSiagE1qATJiIKMIOEk=
+github.com/bigpigeon/Test/go/module_demo/depend3 v0.0.0-20200512104904-915739c9a1e3 h1:fUHVr+iQaEERqmgj7Rhj7z+5BCgdhis44L2ViYGrn4I=
+github.com/bigpigeon/Test/go/module_demo/depend3 v0.0.0-20200512104904-915739c9a1e3/go.mod h1:1+xbj06Rb7HDTaEEFuH15RU/6s4q68CL0ngrZOnPKnM=
 github.com/bigpigeon/logrus v1.2.1-bigpigeon h1:hUQubW7Bbh6R6581erKilQr7peyH4pVntNjs4ihShKw=
 github.com/bigpigeon/logrus v1.2.1-bigpigeon/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/bigpigeon/toyorm v0.3.1-alpha/go.mod h1:1oP0+Eaurzcy6IhI1QmPm76DRTI+WjswK1oQGaafJ+0=

@@ -6,3 +6,11 @@
  */
 
 package main
+
+import (
+	"testing"
+)
+
+func TestGmp(t *testing.T) {
+	t.Log("111")
+}

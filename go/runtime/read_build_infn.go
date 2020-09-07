@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+
 	info, ok := debug.ReadBuildInfo()
 	if ok == false {
 		panic("not support read build info")
