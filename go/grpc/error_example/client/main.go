@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bigpigeon/Test/go/grpc/error_example/options"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -46,6 +47,10 @@ func main() {
 		// you can do `int(status_code)` which will give you `3`
 		//
 		// Want to take specific action based on specific error?
+		switch errStatus.Code() {
+		case options.TooLong:
+			fmt.Println("too long error")
+		}
 		if codes.InvalidArgument == errStatus.Code() {
 			// do your stuff here
 			log.Fatal()

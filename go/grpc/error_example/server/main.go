@@ -10,6 +10,7 @@ package main
 import (
 	"fmt"
 	"github.com/bigpigeon/Test/go/grpc/error_example/options"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
 
@@ -22,9 +23,7 @@ type HelloServer struct{}
 
 func (s *HelloServer) SayHello(ctx context.Context, req *api.HelloRequest) (*api.HelloReply, error) {
 	if len(req.Name) >= 10 {
-		return nil, options.CodeError{
-			Code: "TOO_LONG",
-		}
+		return nil, status.Error(options.TooLong, "Too Long")
 	}
 	return &api.HelloReply{Message: fmt.Sprintf("Hey, %s!", req.GetName())}, nil
 }

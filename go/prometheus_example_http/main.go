@@ -8,6 +8,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/prometheus/common/expfmt"
 	"net/http"
 	"time"
@@ -61,8 +62,13 @@ func main() {
 		},
 	})
 	recordMetrics(opsProcessedSum)
-	reg.MustRegister(opsProcessedSum)
+	err := reg.Register(opsProcessedSum)
 
+	if _, ok := err.(prometheus.AlreadyRegisteredError); ok {
+		fmt.Printf("already registered")
+	} else if err != nil {
+		panic(err)
+	}
 	http.HandleFunc("/metrics", func(writer http.ResponseWriter, request *http.Request) {
 		mfs, err := reg.Gather()
 		if err != nil {
@@ -70,9 +76,7 @@ func main() {
 		}
 		for _, mf := range mfs {
 			if _, err := expfmt.MetricFamilyToText(writer, mf); err != nil {
-				if err != nil {
-					panic(err)
-				}
+				panic(err)
 			}
 		}
 	})

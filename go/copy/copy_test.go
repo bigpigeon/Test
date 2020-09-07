@@ -59,3 +59,12 @@ func TestGobCopy(t *testing.T) {
 	assert.True(t, newVal[0].Embed != val[0].Embed)
 	assert.Equal(t, *newVal[0].Embed, *val[0].Embed)
 }
+
+func TestSliceCopy(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5, 6}
+	b := make([]int, 4)
+	copy(b[:2], a[:2])
+	copy(b[2:], a[4:])
+	t.Log(b)
+	copy(b[2:], a[6:])
+}

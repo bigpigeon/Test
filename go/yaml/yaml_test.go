@@ -66,3 +66,14 @@ replicaCount: 2
 	require.NoError(t, err)
 	t.Logf("%T %v", receiver["replicaCount"], receiver["replicaCount"])
 }
+
+func TestMapEncode(t *testing.T) {
+	type Data struct {
+		MapData map[string]string `yaml:",inline"`
+	}
+	D := Data{MapData: map[string]string{"one": "1", "two": "2"}}
+	var buf bytes.Buffer
+	err := yaml.NewEncoder(&buf).Encode(&D)
+	require.NoError(t, err)
+	t.Logf(buf.String())
+}
