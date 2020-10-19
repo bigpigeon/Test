@@ -2,6 +2,9 @@ package recove
 
 import (
 	"fmt"
+	"log"
+	"path/filepath"
+	"runtime"
 	"runtime/debug"
 	"sync"
 	"testing"
@@ -25,6 +28,8 @@ func TestRecover(t *testing.T) {
 		if r := recover(); r != nil {
 			fmt.Printf("runtime error: %s\n", r)
 			debug.PrintStack()
+
+			log.Print()
 		}
 	}()
 	doSth()
@@ -46,4 +51,17 @@ func TestRecoverWithLock(t *testing.T) {
 		fmt.Println("before recover")
 	}()
 	panic("panic!!!")
+}
+
+func TestPrintPanicLine(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			_, file, line, ok := runtime.Caller(2)
+			if ok == false {
+				panic("must be ok")
+			}
+			fmt.Printf("%s:%d\n", filepath.Base(file), line)
+		}
+	}()
+	doSth()
 }

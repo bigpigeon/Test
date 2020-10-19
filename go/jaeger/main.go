@@ -54,7 +54,7 @@ func main() {
 }
 
 func someFunction(name string) {
-	parent := opentracing.GlobalTracer().StartSpan(name)
+	parent := opentracing.GlobalTracer().StartSpan(name, opentracing.ChildOf(nil))
 
 	parent.Finish()
 	ctx := parent.Context().(jaeger.SpanContext)

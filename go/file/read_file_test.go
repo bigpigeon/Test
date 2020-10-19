@@ -12,6 +12,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"syscall"
 	"testing"
 	"time"
@@ -46,12 +47,15 @@ func TestReadNotDir(t *testing.T) {
 }
 
 func TestFileXAttr(t *testing.T) {
-	os.Remove("testxattr2")
-	fd, err := os.OpenFile("testxattr", os.O_WRONLY|os.O_CREATE, 0644)
-	require.NoError(t, err)
-	fd.Close()
-	err = syscall.Setxattr("testxattr", "user.x", []byte("hash value"), 0)
-	require.NoError(t, err)
+	//os.Remove("testxattr2")
+	//fd, err := os.OpenFile("testxattr", os.O_WRONLY|os.O_CREATE, 0644)
+	//require.NoError(t, err)
+	//fd.Close()
+	for i := 4; i < 6; i++ {
+		err := syscall.Setxattr("testxattr", "user."+strconv.Itoa(i), []byte("hash value"), 0)
+		require.NoError(t, err)
+	}
+
 	data := make([]byte, 1024)
 	sz, err := syscall.Getxattr("testxattr", "user.x", data)
 	require.NoError(t, err)

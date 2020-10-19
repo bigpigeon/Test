@@ -66,7 +66,8 @@ func main() {
 
 		fmt.Println("??")
 		if err != nil {
-			logger.Fatalf("could not greet: %v", err)
+			//logger.Fatalf("could not greet: %v", err)
+			logger.Printf("could not greet: %v", err)
 		}
 		logger.Printf("Greeting: %s", r.Message)
 		span.LogFields(log.String("custom", "Greeting: "+r.Message))

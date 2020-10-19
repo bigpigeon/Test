@@ -22,11 +22,17 @@ import (
 )
 
 func SendN(t testing.TB, p rocketmq.Producer, topic string, n int) {
+	SendTagN(t, p, topic, n, "")
+}
+
+func SendTagN(t testing.TB, p rocketmq.Producer, topic string, n int, tag string) {
 	for i := 0; i < n; i++ {
-		_, err := p.SendSync(context.Background(), &primitive.Message{
+		msg := &primitive.Message{
 			Topic: topic,
 			Body:  []byte("Hello RocketMQ Go Client!" + strconv.Itoa(i)),
-		})
+		}
+		msg.WithTag(tag)
+		_, err := p.SendSync(context.Background(), msg)
 		require.NoError(t, err)
 		//t.Logf("%#v\n", rst)
 	}
@@ -242,4 +248,48 @@ func TestReScribe(t *testing.T) {
 	err = c.Start()
 	require.NoError(t, err)
 	time.Sleep(10000 * time.Second)
+}
+
+func TestTag(t *testing.T) {
+	endpoint := primitive.NamesrvAddr{"http://localhost:9876"}
+	p, err := rocketmq.NewProducer(
+		producer.WithNameServer(endpoint),
+		//producer.WithNsResovler(primitive.NewPassthroughResolver(endPoint)),
+		producer.WithRetry(1),
+		producer.WithGroupName("GID_xxxxxx"),
+	)
+
+	require.NoError(t, err)
+	err = p.Start()
+	require.NoError(t, err)
+	defer p.Shutdown()
+	SendTagN(t, p, "test", 1, "aa")
+
+	c, err := rocketmq.NewPushConsumer(consumer.WithNameServer(endpoint),
+		consumer.WithConsumerModel(consumer.Clustering),
+		consumer.WithGroupName("GID_XXXXXX"),
+		consumer.WithConsumeMessageBatchMaxSize(1),
+	)
+	require.NoError(t, err)
+	count := int64(0)
+	err = c.Subscribe("test", consumer.MessageSelector{
+		Type:       consumer.TAG,
+		Expression: "aa || bb",
+	},
+		func(ctx context.Context, ext ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+			for i, msg := range ext {
+				fmt.Printf("subscribe %d callback: %v id: %s \n", i, string(msg.Body), msg.MsgId)
+			}
+			//atomic.AddInt64(&count, 1)
+			if cc := atomic.AddInt64(&count, 1); cc%2 != 1 {
+				//time.Sleep(100 * time.Second)
+			}
+
+			return consumer.ConsumeSuccess, nil
+		})
+	require.NoError(t, err)
+	err = c.Start()
+	require.NoError(t, err)
+	defer c.Shutdown()
+	time.Sleep(10 * time.Second)
 }

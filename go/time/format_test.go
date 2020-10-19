@@ -125,4 +125,8 @@ func TestDurationParse(t *testing.T) {
 		require.NoError(t, err)
 		t.Log(ti)
 	}
+	{
+		d := 100*time.Microsecond + 100*time.Millisecond + 20*time.Second + 1*time.Hour
+		t.Logf(d.String())
+	}
 }

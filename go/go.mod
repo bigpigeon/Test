@@ -45,6 +45,7 @@ require (
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/go-playground/validator.v9 v9.30.2
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/apimachinery v0.17.1 // indirect
 	k8s.io/client-go v11.0.0+incompatible // indirect
