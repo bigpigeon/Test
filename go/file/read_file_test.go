@@ -81,3 +81,13 @@ func TestWriteOverride(t *testing.T) {
 	err = fd.Truncate(3)
 	require.NoError(t, err)
 }
+
+func TestSeek(t *testing.T) {
+	fd, err := os.OpenFile("testfile", os.O_RDONLY|os.O_CREATE, 0644)
+	require.NoError(t, err)
+	_, err = fd.Seek(5, io.SeekStart)
+	require.NoError(t, err)
+	off, err := fd.Seek(-6, io.SeekCurrent)
+	t.Log(off)
+	t.Log(err)
+}

@@ -14,7 +14,8 @@ func TestSha1(t *testing.T) {
 		panic(err)
 	}
 
-	t.Log(base64.StdEncoding.EncodeToString(mac.Sum(nil)))
+	t.Log(base64.StdEncoding.EncodeToString(mac.Sum([]byte("abc"))))
+	t.Log(base64.StdEncoding.EncodeToString(mac.Sum([]byte(nil))))
 }
 
 func TestConflict(t *testing.T) {

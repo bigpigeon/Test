@@ -8,6 +8,7 @@ package ast_test
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"go/ast"
 	"go/build"
 	"go/parser"
@@ -412,4 +413,31 @@ func TestTypesCheck(t *testing.T) {
 	//	fmt.Printf("point %p\n", v)
 	//	fmt.Printf("obj %v\n", v.String())
 	//}
+}
+
+func TestStructPrint(t *testing.T) {
+	src := `
+package main
+type GlobalStruct struct {
+	Example string
+	Embed struct {
+		EmbedField string
+	}
+}
+
+func main() {
+    data :=  struct {
+		VarField string
+	} {"123"}
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "", src, 0)
+	require.NoError(t, err)
+	//ast.Inspect(f, func(node ast.Node) bool {
+	//
+	//})
+
+	err = ast.Print(fset, f)
+	require.NoError(t, err)
 }
