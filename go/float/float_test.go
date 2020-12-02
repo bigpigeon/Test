@@ -22,3 +22,7 @@ func TestNan(t *testing.T) {
 	a := math.NaN()
 	t.Log(a)
 }
+
+func TestConst(t *testing.T) {
+	t.Log(50 * 0.5)
+}

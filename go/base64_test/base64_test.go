@@ -41,7 +41,7 @@ func BenchmarkBase85Encode(b *testing.B) {
 }
 
 func BenchmarkHexEncode(b *testing.B) {
-	data := make([]byte, 600*4)
+	data := make([]byte, 400*4)
 	_, err := rand.Read(data)
 	require.NoError(b, err)
 	dst := make([]byte, 1200*4)
@@ -53,7 +53,7 @@ func BenchmarkHexEncode(b *testing.B) {
 }
 
 func BenchmarkBase64Decode(b *testing.B) {
-	data := make([]byte, 600*4)
+	data := make([]byte, 400*4)
 	_, err := rand.Read(data)
 	encoder := base64.StdEncoding.EncodeToString(data)
 
