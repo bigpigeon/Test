@@ -16,7 +16,8 @@ import (
 
 func TestName(t *testing.T) {
 	cli := redis.NewUniversalClient(&redis.UniversalOptions{
-		Addrs:        []string{"localhost:6379"},
+		Addrs: []string{"redis-0.redis:6379", "redis-1.redis", "redis-2.redis"},
+
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 		PoolSize:     4,

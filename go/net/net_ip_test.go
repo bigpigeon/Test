@@ -22,3 +22,14 @@ func TestNetIPContainer(t *testing.T) {
 	t.Log(ip1.Contains(ip2.IP))
 	fmt.Println(uint32(ip2.IP[0]) << 24)
 }
+
+func TestListen(t *testing.T) {
+	li, err := net.Listen("tcp", "localhost:10000")
+	require.NoError(t, err)
+	t.Log(li.Addr())
+	{
+		li, err := net.Listen("tcp", "localhost:10000")
+		require.NoError(t, err)
+		t.Log(li.Addr())
+	}
+}

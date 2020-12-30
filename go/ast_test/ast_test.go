@@ -14,6 +14,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"golang.org/x/tools/go/loader"
 	"os"
 
 	//"sort"
@@ -440,4 +441,20 @@ func main() {
 
 	err = ast.Print(fset, f)
 	require.NoError(t, err)
+}
+
+func TestLoad(t *testing.T) {
+	pkgPath := "github.com/golang/example/gotypes/doc"
+	// The loader loads a complete Go program from source code.
+	conf := loader.Config{ParserMode: parser.ParseComments}
+	conf.Import("github.com/golang/example/gotypes/doc")
+	lprog, err := conf.Load()
+	require.NoError(t, err)
+
+	// Find the package and package-level object.
+	pkg := lprog.Package(pkgPath).Pkg
+	obj := pkg.Scope().Lookup("main")
+	if obj == nil {
+		t.Fail()
+	}
 }
