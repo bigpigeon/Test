@@ -18,8 +18,11 @@ import (
 
 import "os"
 
+/* abc
+extra is map sets*/
 type Extra map[string]interface{}
 
+// scan method
 func (e *Extra) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
@@ -35,6 +38,7 @@ func (e Extra) Value() (driver.Value, error) {
 	return json.Marshal(e)
 }
 
+// color represent the color number with name
 type Color struct {
 	Name string `toyorm:"primary key;join:ColorDetail"`
 	Code int32
@@ -57,18 +61,19 @@ type ProductDetail struct {
 	Comment   []Comment
 }
 
-type Product struct {
-	// join tag value must same as container field name
-	ID, Val   uint32     `toyorm:"primary key;auto_increment;join:Detail"`
-	CreatedAt time.Time  `toyorm:"NULL"`
-	DeletedAt *time.Time `toyorm:"NULL"`
-	Name      string
-	Count     int
-	Price     float64
-	Detail    *ProductDetail
-}
-
 func main() {
+	// inner product
+	type Product struct {
+		// join tag value must same as container field name
+		ID, Val   uint32     `toyorm:"primary key;auto_increment;join:Detail"`
+		CreatedAt time.Time  `toyorm:"NULL"`
+		DeletedAt *time.Time `toyorm:"NULL"`
+		Name      string
+		Count     int
+		Price     float64
+		Detail    *ProductDetail
+	}
+
 	var err error
 	var toy *toyorm.Toy
 	// when database is mysql, make sure your mysql have toyorm_example schema

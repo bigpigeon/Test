@@ -7,6 +7,7 @@ require (
 	github.com/Microsoft/hcsshim v0.8.9 // indirect
 	github.com/apache/rocketmq-client-go/v2 v2.0.0 // indirect
 	github.com/bigpigeon/toyorm v0.6.1-alpha
+	github.com/ceph/go-ceph v0.8.0 // indirect
 	github.com/containerd/containerd v1.3.4
 	github.com/containerd/continuity v0.0.0-20200413184840-d3ef23f19fbb // indirect
 	github.com/containerd/fifo v0.0.0-20200410184934-f15a3290365b // indirect
@@ -46,7 +47,7 @@ require (
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
+	golang.org/x/sys v0.0.0-20200501145240-bc7a7d42d5c3
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	google.golang.org/genproto v0.0.0-20200711021454-869866162049
 	google.golang.org/grpc v1.29.1

@@ -8,12 +8,18 @@
 package read_bigfile
 
 import (
+	"crypto/sha1"
+	"encoding/base64"
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path"
+	"runtime"
 	"testing"
+	"time"
 )
 
 func TestReadBigFile(t *testing.T) {
@@ -81,4 +87,25 @@ func TestMMap(t *testing.T) {
 		unix.Close(fd)
 
 	}
+}
+
+func testCreateFile() {
+	data := make([]byte, 1<<30)
+	rand.Read(data)
+	time.Sleep(1 * time.Second)
+	hsum := sha1.Sum(data)
+	fmt.Println(base64.StdEncoding.EncodeToString(hsum[:]))
+	fmt.Println("mypid", os.Getpid())
+}
+
+func TestCreateBigFile(t *testing.T) {
+	testCreateFile()
+	time.Sleep(1 * time.Second)
+	var m runtime.MemStats
+	for {
+		runtime.ReadMemStats(&m)
+		fmt.Println("alloc", m.Alloc, "heap", m.HeapAlloc, "release", m.HeapInuse)
+		time.Sleep(1 * time.Second)
+	}
+	time.Sleep(100 * time.Second)
 }

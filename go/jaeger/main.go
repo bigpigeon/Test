@@ -23,8 +23,9 @@ func main() {
 			SamplingRefreshInterval: 1 * time.Second,
 		},
 		Reporter: &config.ReporterConfig{
-			LogSpans:            true,
+			LogSpans:            false,
 			BufferFlushInterval: 1 * time.Second,
+
 			//LocalAgentHostPort:  "192.168.0.1:6831",
 		},
 		ServiceName: "test ",

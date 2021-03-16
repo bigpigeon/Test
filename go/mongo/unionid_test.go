@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
+	"strconv"
+	"sync"
 	"testing"
 	"time"
 )
@@ -44,4 +46,42 @@ func TestUnionID(t *testing.T) {
 	err = ctx.FindId(doc.SliceTagID).One(&findDoc)
 	require.NoError(t, err)
 	require.Equal(t, *doc, findDoc)
+}
+
+type BookInfo struct {
+	ID       string `bson:"_id"`
+	BookName string `bson:"name"`
+}
+
+func TestParallelUpdate(t *testing.T) {
+	session, err := mgo.DialWithTimeout("localhost:27017", time.Second)
+	require.NoError(t, err)
+	session.SetPoolLimit(10)
+
+	ctx := session.DB("").C("Book")
+	uid := uuid.New().String()
+	doc := &BookInfo{
+		ID:       uid,
+		BookName: "ani",
+	}
+
+	err = ctx.Insert(doc)
+	require.NoError(t, err)
+	wg := sync.WaitGroup{}
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			ctx := session.DB("").C("Book")
+			err := ctx.UpdateId(uid, &BookInfo{
+				ID:       uid,
+				BookName: "ani" + strconv.Itoa(i),
+			})
+			if err != nil {
+				panic(err)
+			}
+		}(i)
+	}
+	wg.Wait()
+
 }

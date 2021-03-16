@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"log"
 	"syscall"
 	"time"
@@ -54,7 +55,27 @@ func redisExample() error {
 	if err != nil {
 		return err
 	}
+
 	defer task.Delete(ctx)
+	// create process from task
+	proc, err := task.Exec(ctx, "ps", &specs.Process{
+		Terminal:        false,
+		Args:            []string{"/bin/ps", "aux"},
+		CommandLine:     "ps",
+		Cwd:             "/",
+		NoNewPrivileges: false,
+		ApparmorProfile: "",
+		OOMScoreAdj:     nil,
+		SelinuxLabel:    "",
+	}, cio.NewCreator(cio.WithStdio))
+	if err != nil {
+		panic(err)
+	}
+	err = proc.Start(ctx)
+	if err != nil {
+		panic(err)
+	}
+	defer proc.Delete(ctx)
 
 	// make sure we wait before calling start
 	exitStatusC, err := task.Wait(ctx)
@@ -68,7 +89,7 @@ func redisExample() error {
 	}
 
 	// sleep for a lil bit to see the logs
-	time.Sleep(3 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	// kill the process and get the exit status
 	if err := task.Kill(ctx, syscall.SIGTERM); err != nil {

@@ -184,6 +184,7 @@ func main() {
 	// (the comments associated with the variable declaration), and create
 	// the new comments list.
 	f.Comments = cmap.Filter(f).Comments()
+	fmt.Println(cmap.String())
 
 	// Print the modified AST.
 	var buf bytes.Buffer

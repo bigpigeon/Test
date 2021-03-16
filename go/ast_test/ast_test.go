@@ -45,6 +45,23 @@ func TestAstPrint(t *testing.T) {
 	}
 }
 
+func TestAstCommentPrint(t *testing.T) {
+	// Create the AST by parsing src.
+	fs := token.NewFileSet() // positions are relative to fset
+
+	fMap, err := parser.ParseDir(fs, directory, nil, 0|parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	// Print the AST.
+	for _, f := range fMap {
+		for _, _f := range f.Files {
+			cmap := ast.NewCommentMap(fs, f, _f.Comments)
+			fmt.Println(cmap.String())
+		}
+	}
+}
+
 type visitor struct{ fs *token.FileSet }
 
 func (s visitor) Visit(node ast.Node) ast.Visitor {
