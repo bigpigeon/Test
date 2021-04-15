@@ -12,8 +12,12 @@ extern void panic(void);
 */
 import "C"
 
-import _ "github.com/ianlancetaylor/cgosymbolizer"
+import (
+	"fmt"
+	_ "github.com/bigpigeon/Test/go/cgo_test/traceback_test/testpanic/cgosymbolizer"
+)
 
 func main() {
+	fmt.Println("sth")
 	C.panic()
 }
