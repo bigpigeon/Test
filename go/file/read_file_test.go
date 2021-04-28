@@ -8,6 +8,8 @@
 package file
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"github.com/stretchr/testify/require"
 	"io"
 	"io/ioutil"
@@ -90,4 +92,26 @@ func TestSeek(t *testing.T) {
 	off, err := fd.Seek(-6, io.SeekCurrent)
 	t.Log(off)
 	t.Log(err)
+}
+
+func TestFileStat(t *testing.T) {
+	for _, f := range []string{"/dev/sda", "/dev", "/dev/sdb", "/home", "/home/jia", "/"} {
+
+		var statfs syscall.Statfs_t
+		err := syscall.Statfs(f, &statfs)
+		require.NoError(t, err)
+
+		b := make([]byte, 8)
+		binary.BigEndian.PutUint32(b[:4], uint32(statfs.Fsid.X__val[0]))
+		binary.BigEndian.PutUint32(b[4:], uint32(statfs.Fsid.X__val[1]))
+		t.Logf("%s sys stat \t %+v\n", f, statfs)
+		t.Logf("uuid %s\n", base64.RawURLEncoding.EncodeToString(b))
+	}
+
+}
+
+func TestOsExecute(t *testing.T) {
+	execVal, err := os.Executable()
+	require.NoError(t, err)
+	t.Logf(execVal)
 }

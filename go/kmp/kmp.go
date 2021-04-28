@@ -13,6 +13,22 @@ type Kmp struct {
 	dp  [][]int
 }
 
+func printDp(pat string, dp [][]int) {
+	fmt.Print("  ")
+	for _, s := range pat {
+		fmt.Printf("%c ", s)
+	}
+	fmt.Println()
+	for i := 0; i < 'z'-'a'+1; i++ {
+		fmt.Printf("%c ", byte(i+'a'))
+		for _, v := range dp {
+			fmt.Printf("%d ", v[i])
+		}
+		fmt.Println()
+	}
+
+}
+
 func NewKmp(pat string) *Kmp {
 	kmp := &Kmp{
 		Pat: pat,
@@ -25,7 +41,6 @@ func NewKmp(pat string) *Kmp {
 	x := 0
 
 	for i := 1; i < len(pat); i++ {
-		fmt.Println("x=", x)
 		for c := 0; c < 'z'-'a'+1; c++ {
 			if pat[i] == byte(c)+'a' {
 				kmp.dp[i][c] = i + 1
@@ -33,8 +48,10 @@ func NewKmp(pat string) *Kmp {
 				kmp.dp[i][c] = kmp.dp[x][c]
 			}
 		}
+		// example world abcabc, when iter 4'th index word ,x become 1
 		x = kmp.dp[x][pat[i]-'a']
 	}
+	printDp(pat, kmp.dp)
 	return kmp
 }
 

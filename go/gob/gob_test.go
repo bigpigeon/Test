@@ -9,9 +9,11 @@ package gob_test
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/gob"
 	"github.com/stretchr/testify/require"
+	"reflect"
 	"testing"
 )
 
@@ -62,4 +64,29 @@ func TestGobDecodeInterface(t *testing.T) {
 	err = gob.NewDecoder(bytes.NewReader(buff)).Decode(&ddoc)
 	require.NoError(t, err)
 	t.Logf("%#v\n", ddoc)
+}
+
+func TestGobHasher(t *testing.T) {
+	hasher := sha256.New()
+	data := []byte("1234567890")
+	_, err := hasher.Write(data)
+	require.NoError(t, err)
+	right := hasher.Sum(nil)
+	t.Log(base64.RawStdEncoding.EncodeToString(right))
+	{
+		hasher := sha256.New()
+		_, err := hasher.Write(data[:5])
+		require.NoError(t, err)
+		var buff bytes.Buffer
+		gobEncoder := gob.NewEncoder(&buff)
+		err = gobEncoder.EncodeValue(reflect.ValueOf(hasher).Elem())
+		require.NoError(t, err)
+		gobDecoder := gob.NewDecoder(&buff)
+		decoderHasher := sha256.New()
+		err = gobDecoder.Decode(decoderHasher)
+		require.NoError(t, err)
+		_, err = decoderHasher.Write(data[5:])
+		require.NoError(t, err)
+		t.Log("gob hash", base64.RawStdEncoding.EncodeToString(right))
+	}
 }

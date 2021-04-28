@@ -26,6 +26,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.14.6
 	github.com/ianlancetaylor/cgosymbolizer v0.0.0-20210303021718-7cb7081f6b86 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
+	github.com/jaypipes/ghw v0.7.0 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.0
@@ -47,9 +48,10 @@ require (
 	github.com/uber/jaeger-client-go v2.19.0+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
 	github.com/vishvananda/netlink v1.1.0 // indirect
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200501145240-bc7a7d42d5c3
+	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	google.golang.org/genproto v0.0.0-20200711021454-869866162049
 	google.golang.org/grpc v1.29.1

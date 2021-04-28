@@ -15,8 +15,8 @@ func TestNewKmp(t *testing.T) {
 	//kmp := NewKmp("abababc")
 	//t.Log(kmp.dp)
 	{
-		kmp := NewKmp("ababc")
-		t.Log(kmp.Query("abababc"))
+		kmp := NewKmp("abcdabd")
+		t.Log(kmp.Query("abcdabcdabde"))
 	}
 }
 
