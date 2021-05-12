@@ -21,7 +21,8 @@ func TestGHW(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(netDev.String())
 	for _, nic := range netDev.NICs {
-		t.Logf(" %v\n", nic.String())
+
+		t.Logf(" %v %v %s\n", nic.String(), nic.IsVirtual, nic.MacAddress)
 
 		enabledCaps := make([]int, 0)
 		for x, cap := range nic.Capabilities {
